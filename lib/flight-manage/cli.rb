@@ -1,4 +1,3 @@
-#require 'inventoryware/commands'
 # ==============================================================================
 # Copyright (C) 2019-present Alces Flight Ltd.
 #
@@ -26,6 +25,7 @@
 # https://github.com/openflighthpc/flight-manage
 # ==============================================================================
 
+require 'flight-manage/commands'
 
 require 'commander'
 
