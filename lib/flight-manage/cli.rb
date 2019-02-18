@@ -12,5 +12,10 @@ module FlightManage
     program :version, '0.0.0'
     program :description, 'Remote executor of shared scripts.'
     program :help_paging, false
+
+    ARGV.push '--help' if ARGV.empty?
+
+    #silent_trace!
+
   end
 end
