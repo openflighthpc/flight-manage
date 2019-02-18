@@ -29,6 +29,8 @@ require 'flight-manage/command'
 require 'flight-manage/config'
 require 'flight-manage/exceptions'
 
+require 'open3'
+
 module FlightManage
   module Commands
     module Scripts
@@ -48,7 +50,7 @@ Script at #{script_loc} is not reachable
 
           File.open(script_loc) { |file| script = file.read }
 
-          result = %x[ #{script} ]
+          stdout, stderr, exit_code = Open3.capture3(script)
         end
       end
     end
