@@ -10,12 +10,14 @@ GEM
   remote: https://rubygems.org/
   specs:
     highline (1.7.10)
+    paint (2.1.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   commander!
+  paint
 
 BUNDLED WITH
    1.17.1

@@ -28,10 +28,10 @@
 require 'flight-manage/commands'
 
 require 'commander'
+require 'paint'
 
 module FlightManage
   module CLI
-    # TODO confirm with mark about the name stuff
     PROGRAM_NAME = ENV.fetch('FLIGHT_PROGRAM_NAME', 'manage')
 
     extend Commander::Delegates
@@ -43,6 +43,25 @@ module FlightManage
     ARGV.push '--help' if ARGV.empty?
 
     #silent_trace!
+
+    error_handler do |e|
+      $stderr.puts "#{Paint[PROGRAM_NAME, '#2794d8']}: #{Paint[e.to_s, :red]}"
+      case e
+      when OptionParser::InvalidOption,
+           Commander::Runner::InvalidCommandError,
+           Commander::Patches::CommandUsageError
+        $stderr.puts "\nUsage:\n\n"
+        args = ARGV.reject{|o| o[0] == '-'}
+        if command(topic = args[0..1].join(" "))
+          command("help").run(topic)
+        elsif command(args[0])
+          command("help").run(args[0])
+        else
+          command("help").run
+        end
+      end
+      exit(1)
+    end
 
     class << self
       def action(command, klass)
