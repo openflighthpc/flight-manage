@@ -1,0 +1,21 @@
+GIT
+  remote: git://github.com/alces-software/commander.git
+  revision: 89523312cc16c5454d79b598bec05112ee529d5d
+  tag: 4.4.4.alces3
+  specs:
+    commander (4.4.4.pre.alces2)
+      highline (~> 1.7.2)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    highline (1.7.10)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  commander!
+
+BUNDLED WITH
+   1.17.1
