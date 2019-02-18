@@ -26,12 +26,29 @@
 # ==============================================================================
 
 require 'flight-manage/command'
+require 'flight-manage/config'
+require 'flight-manage/exceptions'
 
 module FlightManage
   module Commands
     module Scripts
       class Run < Command
         def run
+          script_name = @argv[0]
+          script_loc = File.join(FlightManage::Config.scripts_dir, script_name)
+
+          #TODO probs replace this with glob so can leave off extensions/give disambiguation
+          unless File.file?(script_loc) and File.readable?(script_loc)
+            raise ArgumentError, <<-ERROR.chomp
+Script at #{script_loc} is not reachable
+            ERROR
+          end
+
+          script = ""
+
+          File.open(script_loc) { |file| script = file.read }
+
+          result = %x[ #{script} ]
         end
       end
     end
