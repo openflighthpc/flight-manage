@@ -28,10 +28,10 @@
 require 'flight-manage/command'
 require 'flight-manage/config'
 require 'flight-manage/exceptions'
+require 'flight-manage/utils'
 
 require 'date'
 require 'open3'
-require 'socket'
 require 'yaml'
 
 module FlightManage
@@ -81,7 +81,7 @@ Script at #{script_loc} is not reachable
         end
 
         def find_node_info
-          node_name = Socket.gethostname.split('.')[0]
+          node_name = Utils.get_host_name
 
           out_file = File.join(FlightManage::Config.data_dir, node_name)
 
