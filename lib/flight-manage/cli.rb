@@ -89,7 +89,7 @@ module FlightManage
       cli_syntax(c, '[NODE]')
       c.description = "Show history of execution on a node"
       c.hidden = true
-      action(c, nil)
+      action(c, Commands::Nodes::Show)
     end
 
     command :script do |c|

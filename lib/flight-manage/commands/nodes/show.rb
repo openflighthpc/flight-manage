@@ -25,5 +25,36 @@
 # https://github.com/openflighthpc/flight-manage
 # ==============================================================================
 
-require 'flight-manage/commands/nodes/show'
-require 'flight-manage/commands/scripts/run'
+require 'flight-manage/command'
+require 'flight-manage/config'
+require 'flight-manage/exceptions'
+require 'flight-manage/utils'
+
+module FlightManage
+  module Commands
+    module Nodes
+      class Show < Command
+        def run
+          host = @argv[0]
+          unless host
+            host = Utils.get_host_name
+          end
+          data_loc = File.join(Config.data_dir, host)
+
+          unless File.readable?(data_loc)
+            raise ArgumentError, <<-ERROR.chomp
+No data found for #{host}
+            ERROR
+          end
+
+          data = Utils.get_data(data_loc)
+
+          puts "Showing current state of hostname: #{host}\n\n"
+          data.each do |key, vals|
+            puts "#{key}: #{vals['status']}"
+          end
+        end
+      end
+    end
+  end
+end
