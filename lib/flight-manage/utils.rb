@@ -32,5 +32,20 @@ module FlightManage
     def self.get_host_name
       Socket.gethostname.split('.')[0]
     end
+
+    def self.get_data(location)
+      data = nil
+      begin
+        File.open(location) do |f|
+          data = YAML.safe_load(f)
+        end
+      rescue Psych::SyntaxError
+        raise ParseError, <<-ERROR.chomp
+Error parsing yaml in #{location} - aborting
+        ERROR
+      end
+      data = {} if data.nil?
+      data
+    end
   end
 end

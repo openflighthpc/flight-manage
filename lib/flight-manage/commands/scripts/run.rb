@@ -53,7 +53,7 @@ module FlightManage
           exit_code = process_status.exitstatus
           status = exit_code == 0 ? "OK" : "FAIL"
 
-          data = get_data(out_file)
+          data = Utils.get_data(out_file)
 
           data[script_name] = {
             "time" => time,
@@ -97,21 +97,6 @@ Output file at #{out_file} is not reachable - check permissions and try again
           end
 
           return node_name, out_file
-        end
-
-        def get_data(location)
-          data = nil
-          begin
-            File.open(location) do |f|
-              data = YAML.safe_load(f)
-            end
-          rescue Psych::SyntaxError
-            raise ParseError, <<-ERROR.chomp
-Error parsing yaml in #{location} - aborting
-            ERROR
-          end
-          data = {} if data.nil?
-          data
         end
       end
     end
