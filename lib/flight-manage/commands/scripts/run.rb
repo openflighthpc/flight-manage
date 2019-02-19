@@ -29,6 +29,7 @@ require 'flight-manage/command'
 require 'flight-manage/config'
 require 'flight-manage/exceptions'
 
+require 'date'
 require 'open3'
 require 'socket'
 require 'yaml'
@@ -46,6 +47,7 @@ module FlightManage
 
           # need to switch to popen3 & block syntax if want to manipulate the thread
           stdout, stderr, process_status = Open3.capture3(script)
+          time = DateTime.now.to_s
           stdout.chomp!
           stderr.chomp!
           exit_code = process_status.exitstatus
@@ -54,6 +56,7 @@ module FlightManage
           data = get_data(out_file)
 
           data[script_name] = {
+            "time" => time,
             "status" => status,
             "exit_code" => exit_code,
             "stdout" => stdout,
