@@ -30,12 +30,40 @@ require 'flight-manage/config'
 require 'flight-manage/exceptions'
 
 require 'open3'
+require 'socket'
+require 'yaml'
 
 module FlightManage
   module Commands
     module Scripts
       class Run < Command
         def run
+          script_name, script_loc = find_script
+          node_name, out_file = find_node_info
+
+          script = ""
+          File.open(script_loc) { |file| script = file.read }
+
+          # need to switch to popen3 & block syntax if want to manipulate the thread
+          stdout, stderr, process_status = Open3.capture3(script)
+          stdout.chomp!
+          stderr.chomp!
+          exit_code = process_status.exitstatus
+          status = exit_code == 0 ? "OK" : "FAIL"
+
+          data = get_data(out_file)
+
+          data[script_name] = {
+            "status" => status,
+            "exit_code" => exit_code,
+            "stdout" => stdout,
+            "stderr" => stderr
+          }
+
+          File.open(out_file, 'w') { |f| f.write(data.to_yaml) }
+        end
+
+        def find_script
           script_name = @argv[0]
           script_loc = File.join(FlightManage::Config.scripts_dir, script_name)
 
@@ -46,11 +74,41 @@ Script at #{script_loc} is not reachable
             ERROR
           end
 
-          script = ""
+          return script_name, script_loc
+        end
 
-          File.open(script_loc) { |file| script = file.read }
+        def find_node_info
+          node_name = Socket.gethostname.split('.')[0]
 
-          stdout, stderr, exit_code = Open3.capture3(script)
+          out_file = File.join(FlightManage::Config.data_dir, node_name)
+
+          #if out_file doesn't exist, create it
+          unless File.file?(out_file)
+            File.open(out_file, 'w') {}
+          end
+
+          unless File.writable?(out_file)
+            raise ArgumentError, <<-ERROR.chomp
+Output file at #{out_file} is not reachable - check permissions and try again
+            ERROR
+          end
+
+          return node_name, out_file
+        end
+
+        def get_data(location)
+          data = nil
+          begin
+            File.open(location) do |f|
+              data = YAML.safe_load(f)
+            end
+          rescue Psych::SyntaxError
+            raise ParseError, <<-ERROR.chomp
+Error parsing yaml in #{location} - aborting
+            ERROR
+          end
+          data = {} if data.nil?
+          data
         end
       end
     end
