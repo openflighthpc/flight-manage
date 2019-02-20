@@ -118,7 +118,7 @@ module FlightManage
       c.hidden = true
       c.option '-r', '--role ROLE',
         "Run all scripts with ROLE (and no STAGE unless --stage is passed)"
-      c.option '-s', '--stage',
+      c.option '-s', '--stage STAGE',
         "Run all scripts with STAGE (and no ROLE unless --role is passed)"
       action(c, Commands::Scripts::Run)
     end
