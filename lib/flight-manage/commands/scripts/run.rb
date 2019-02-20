@@ -121,8 +121,10 @@ Script at #{script_loc} is not a flight script
           else
             matches = []
             scripts = Utils.find_all_flight_scripts
-            scripts.each do |key, value|
-              if @options.stage == value['stages'] and @options.role == value['roles']
+            scripts.each do |key, val|
+              stages = val['stages'].nil? ? [nil] : val['stages'].split(',')
+              roles = val['roles'].nil? ? [nil] : val['roles'].split(',')
+              if stages&.include?(@options.stage) and roles&.include?(@options.role)
                 matches << File.join(Config.scripts_dir, key)
               end
             end
