@@ -47,5 +47,15 @@ Error parsing yaml in #{location} - aborting
       data = {} if data.nil?
       data
     end
+
+    def self.is_flight_script?(script)
+      #NB: File.read & File.readlines both load the entire file into mem
+      flight = false
+      IO.foreach(script) do |line|
+        flight = true if line =~ /^#FLIGHT/
+        break unless (line =~ /^#/ or line =~ /^$/)
+      end
+      return flight
+    end
   end
 end
