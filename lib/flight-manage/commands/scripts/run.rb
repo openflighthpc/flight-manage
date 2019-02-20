@@ -61,6 +61,7 @@ module FlightManage
           }
 
           File.open(out_file, 'w') { |f| f.write(data.to_yaml) }
+          puts "#{script_name} executed with exit code #{exit_code}"
         end
 
         def find_script
