@@ -39,7 +39,9 @@ module FlightManage
     module Scripts
       class Run < Command
         def run
-          script_name, script_loc = find_script
+          script_loc = find_script
+          script_name = script_loc.gsub(/^#{Config.scripts_dir}/,'')
+          script_name = script_name.gsub(/\.bash$/,'')
           node_name, out_file = find_node_info
 
           # need to switch to popen3 & block syntax if want to manipulate the thread
@@ -105,12 +107,11 @@ Script at #{script_loc} is not reachable
             ERROR
           end
 
-          return script_arg, script_loc
+          return script_loc
         end
 
         def find_node_info
           node_name = Utils.get_host_name
-
           out_file = File.join(FlightManage::Config.data_dir, node_name)
 
           #if out_file doesn't exist, create it
