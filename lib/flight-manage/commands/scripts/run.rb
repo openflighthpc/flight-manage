@@ -129,8 +129,8 @@ Script at #{script_loc} is not a flight script
               end
             end
             if matches.empty?
-              role_str = @options.role ? " role '#{@options.role}'" : "no role"
-              stage_str = @options.stage ? " stage '#{@options.stage}'" : "no stage"
+              role_str = @options.role ? "role '#{@options.role}'" : "no role"
+              stage_str = @options.stage ? "stage '#{@options.stage}'" : "no stage"
               raise ArgumentError, <<-ERROR.chomp
 No scripts found with #{role_str} and #{stage_str}
               ERROR
