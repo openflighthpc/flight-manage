@@ -111,6 +111,11 @@ No files found for #{script_arg}
 Script at #{script_loc} is not reachable
               ERROR
             end
+            unless Utils.is_flight_script?(script_loc)
+              raise ArgumentError, <<-ERROR.chomp
+Script at #{script_loc} is not a flight script
+              ERROR
+            end
 
             return [script_loc]
           else
