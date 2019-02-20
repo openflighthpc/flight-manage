@@ -64,17 +64,47 @@ module FlightManage
         end
 
         def find_script
-          script_name = @argv[0]
-          script_loc = File.join(FlightManage::Config.scripts_dir, script_name)
+          script_arg = @argv[0]
+          #TODO let users specify the .bash themselves & not care?
+          script_loc = File.join(Config.scripts_dir, "#{script_arg}.bash")
+=begin
+#TODO finish this
+          glob_str = File.join(
+            FlightManage::Config.scripts_dir,
+            #still doesn't work for multilvl systems
+            "#{script_arg}**/*.bash"
+          )
+          found = Dir.glob(glob_str)
 
-          #TODO probs replace this with glob so can leave off extensions/give disambiguation
+          if found.empty?
+            raise ArgumentError, <<-ERROR.chomp
+No files found for #{script_arg}
+            ERROR
+          elsif found.length == 1
+            script_loc = found[0]
+          else
+            file_names = found.map { |p| File.basename(p, File.extname(p)) }
+            # if the results include just the search val, return that path
+            if file_names.include?(script_arg)
+              script_loc = found.select { |p| p =~ /#{script_arg}\.bash$/ }[0]
+            else
+              $stderr.puts "Ambiguous search term '#{script_arg}'"\
+              " - possible results are:"
+              file_names.each_slice(3).each { |p| $stderr.puts p.join("  ") }
+              raise ArgumentError, <<-ERROR.chomp
+  Please refine your search.
+              ERROR
+            end
+          end
+=end
+
           unless File.file?(script_loc) and File.readable?(script_loc)
             raise ArgumentError, <<-ERROR.chomp
 Script at #{script_loc} is not reachable
             ERROR
           end
 
-          return script_name, script_loc
+          return script_arg, script_loc
         end
 
         def find_node_info
