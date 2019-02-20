@@ -39,9 +39,13 @@ module FlightManage
     module Scripts
       class Run < Command
         def run
-          script_loc = find_script
+          find_script.each { |script| execute(script) }
+        end
+
+        def execute(script_loc)
           script_name = script_loc.gsub(/^#{Config.scripts_dir}/,'')
           script_name = script_name.gsub(/\.bash$/,'')
+          # maybe move this up so it's only executed once?
           node_name, out_file = find_node_info
 
           # need to switch to popen3 & block syntax if want to manipulate the thread
@@ -67,9 +71,11 @@ module FlightManage
         end
 
         def find_script
-          script_arg = @argv[0]
-          script_arg = script_arg.gsub(/\.bash$/, '')
-          script_loc = File.join(Config.scripts_dir, "#{script_arg}.bash")
+          if not @options.stage and not @options.role
+            script_arg = @argv[0]
+            script_arg = script_arg.gsub(/\.bash$/, '')
+            script_loc = File.join(Config.scripts_dir, "#{script_arg}.bash")
+
 =begin
 #TODO finish this
           glob_str = File.join(
@@ -100,14 +106,30 @@ No files found for #{script_arg}
             end
           end
 =end
-
-          unless File.file?(script_loc) and File.readable?(script_loc)
-            raise ArgumentError, <<-ERROR.chomp
+            unless File.file?(script_loc) and File.readable?(script_loc)
+              raise ArgumentError, <<-ERROR.chomp
 Script at #{script_loc} is not reachable
-            ERROR
-          end
+              ERROR
+            end
 
-          return script_loc
+            return [script_loc]
+          else
+            matches = []
+            scripts = Utils.find_all_flight_scripts
+            scripts.each do |key, value|
+              if @options.stage == value['stage'] and @options.role == value['role']
+                matches << File.join(Config.scripts_dir, key)
+              end
+            end
+            if matches.empty?
+              role_str = @options.role ? " role '#{@options.role}'" : "no role"
+              stage_str = @options.stage ? " stage '#{@options.stage}'" : "no stage"
+              raise ArgumentError, <<-ERROR.chomp
+No scripts found with #{role_str} and #{stage_str}
+              ERROR
+            end
+            return matches
+          end
         end
 
         def find_node_info
