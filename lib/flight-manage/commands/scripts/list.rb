@@ -36,15 +36,8 @@ module FlightManage
     module Scripts
       class List < Command
         def run
-          found = Dir.glob(File.join(Config.scripts_dir, '**/*.bash'))
-          flight_scripts = []
-          found.each do |script|
-            flight_scripts << script if Utils.is_flight_script?(script)
-          end
-          scripts_path = Pathname.new(Config.scripts_dir)
-          flight_scripts.map! do |p|
-            puts Pathname.new(p).relative_path_from(scripts_path).to_s
-          end
+          # maybe list non flight scripts with an 'X'
+          Utils.find_all_flight_scripts.keys.each { |s| puts s }
         end
       end
     end

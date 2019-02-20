@@ -57,5 +57,26 @@ Error parsing yaml in #{location} - aborting
       end
       return flight
     end
+
+    # returns a hash of hashes
+    # { script1 => { FLIGHTvar => value, ... }, script2 => {...}, ... }
+    def self.find_all_flight_scripts
+      found = Dir.glob(File.join(Config.scripts_dir, '**/*.bash'))
+      flight_scripts = {}
+      found.each do |script|
+        script_name = script.gsub(/^#{Config.scripts_dir}/,'')
+        IO.foreach(script) do |line|
+          if line =~ /^#FLIGHT/
+            flight_scripts[script_name] = {} unless flight_scripts[script_name]
+            match = line.match(/^#FLIGHT(\w*): (.*)$/)
+            if match&.captures
+              key, val = match.captures
+              flight_scripts[script_name][key] = val
+            end
+          end
+        end
+      end
+      return flight_scripts
+    end
   end
 end
