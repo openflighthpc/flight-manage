@@ -66,7 +66,7 @@ module FlightManage
 
         def find_script
           script_arg = @argv[0]
-          #TODO let users specify the .bash themselves & not care?
+          script_arg = script_arg.gsub(/\.bash$/, '')
           script_loc = File.join(Config.scripts_dir, "#{script_arg}.bash")
 =begin
 #TODO finish this
