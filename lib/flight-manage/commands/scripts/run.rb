@@ -42,11 +42,8 @@ module FlightManage
           script_name, script_loc = find_script
           node_name, out_file = find_node_info
 
-          script = ""
-          File.open(script_loc) { |file| script = file.read }
-
           # need to switch to popen3 & block syntax if want to manipulate the thread
-          stdout, stderr, process_status = Open3.capture3(script)
+          stdout, stderr, process_status = Open3.capture3(script_loc)
           time = DateTime.now.to_s
           stdout.chomp!
           stderr.chomp!
