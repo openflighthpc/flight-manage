@@ -25,6 +25,28 @@
 # https://github.com/openflighthpc/flight-manage
 # ==============================================================================
 
-require 'flight-manage/commands/nodes/show'
-require 'flight-manage/commands/scripts/list'
-require 'flight-manage/commands/scripts/run'
+require 'flight-manage/command'
+require 'flight-manage/config'
+require 'flight-manage/utils'
+
+require 'pathname'
+
+module FlightManage
+  module Commands
+    module Scripts
+      class List < Command
+        def run
+          found = Dir.glob(File.join(Config.scripts_dir, '**/*.bash'))
+          flight_scripts = []
+          found.each do |script|
+            flight_scripts << script if Utils.is_flight_script?(script)
+          end
+          scripts_path = Pathname.new(Config.scripts_dir)
+          flight_scripts.map! do |p|
+            puts Pathname.new(p).relative_path_from(scripts_path).to_s
+          end
+        end
+      end
+    end
+  end
+end

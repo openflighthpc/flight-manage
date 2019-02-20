@@ -102,7 +102,7 @@ module FlightManage
       cli_syntax(c)
       c.description = "List available scripts"
       c.hidden = true
-      action(c, nil)
+      action(c, Commands::Scripts::List)
     end
 
     command :'script show' do |c|
