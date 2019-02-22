@@ -45,12 +45,13 @@ module FlightManage
       end
     end
 
-    attr_reader :data_dir, :scripts_dir
+    attr_reader :data_dir, :scripts_dir, :log_file
 
     def initialize
       @root_dir = File.expand_path(File.join(File.dirname(__FILE__), '../..'))
       @data_dir = '/opt/service/flight/managedata/'
       @scripts_dir = '/opt/service/scripts/'
+      @log_file = File.join(@root_dir, 'var/log/manage.log')
     end
   end
 end
