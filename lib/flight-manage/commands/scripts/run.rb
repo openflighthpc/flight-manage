@@ -72,51 +72,7 @@ module FlightManage
 
         def find_script
           if not @options.stage and not @options.role
-            script_arg = @argv[0]
-            script_arg = script_arg.gsub(/\.bash$/, '')
-            script_loc = File.join(Config.scripts_dir, "#{script_arg}.bash")
-
-=begin
-#TODO finish this
-          glob_str = File.join(
-            FlightManage::Config.scripts_dir,
-            #still doesn't work for multilvl systems
-            "#{script_arg}**/*.bash"
-          )
-          found = Dir.glob(glob_str)
-
-          if found.empty?
-            raise ArgumentError, <<-ERROR.chomp
-No files found for #{script_arg}
-            ERROR
-          elsif found.length == 1
-            script_loc = found[0]
-          else
-            file_names = found.map { |p| File.basename(p, File.extname(p)) }
-            # if the results include just the search val, return that path
-            if file_names.include?(script_arg)
-              script_loc = found.select { |p| p =~ /#{script_arg}\.bash$/ }[0]
-            else
-              $stderr.puts "Ambiguous search term '#{script_arg}'"\
-              " - possible results are:"
-              file_names.each_slice(3).each { |p| $stderr.puts p.join("  ") }
-              raise ArgumentError, <<-ERROR.chomp
-  Please refine your search.
-              ERROR
-            end
-          end
-=end
-            unless File.file?(script_loc) and File.readable?(script_loc)
-              raise ArgumentError, <<-ERROR.chomp
-Script at #{script_loc} is not reachable
-              ERROR
-            end
-            unless Utils.is_flight_script?(script_loc)
-              raise ArgumentError, <<-ERROR.chomp
-Script at #{script_loc} is not a flight script
-              ERROR
-            end
-
+            script_loc = Utils.find_script_from_arg(@argv[0])
             return [script_loc]
           else
             matches = []
