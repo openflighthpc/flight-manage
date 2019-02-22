@@ -44,7 +44,7 @@ module FlightManage
 
         def execute(script_loc)
           script_name = Utils.get_name_from_script_location(script_loc)
-          script_name = script_name.gsub(/\.bash$/,'')
+          script_name = Utils.remove_bash_ext(script_name)
           # maybe move this up so it's only executed once?
           node_name, out_file = find_node_info
 

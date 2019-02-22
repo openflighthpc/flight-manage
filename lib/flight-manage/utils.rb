@@ -48,13 +48,16 @@ Error parsing yaml in #{location} - aborting
       data
     end
 
+    def self.remove_bash_ext(str)
+      str.gsub(/\.bash$/, '')
+    end
+
     def self.get_name_from_script_location(loc)
         loc.gsub(/^#{Config.scripts_dir}/,'')
     end
 
     def self.find_script_from_arg(arg)
-      script_arg = arg
-      script_arg = script_arg.gsub(/\.bash$/, '')
+      script_arg = remove_bash_ext(arg)
       script_loc = File.join(Config.scripts_dir, "#{script_arg}.bash")
 
       unless File.file?(script_loc) and File.readable?(script_loc)
