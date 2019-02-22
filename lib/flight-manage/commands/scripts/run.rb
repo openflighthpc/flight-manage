@@ -48,12 +48,21 @@ module FlightManage
           # maybe move this up so it's only executed once?
           node_name, out_file = find_node_info
 
-          # need to switch to popen3 & block syntax if want to manipulate the thread
-          stdout, stderr, process_status = Open3.capture3(script_loc)
+          communicator = nil
+          # use this block syntax to temporarily change the working dir
+          Dir.chdir(File.dirname(script_loc)) do
+          # need to switch to popen3 if we want to manipulate the thread
+            stdout, stderr, process_status = Open3.capture3(script_loc)
+            communicator = {
+              stdout: stdout,
+              stderr: stderr,
+              process_status: process_status,
+            }
+          end
           time = DateTime.now.to_s
-          stdout.chomp!
-          stderr.chomp!
-          exit_code = process_status.exitstatus
+          stdout = communicator[:stdout].chomp
+          stderr = communicator[:stderr].chomp
+          exit_code = communicator[:process_status].exitstatus
           status = exit_code == 0 ? "OK" : "FAIL"
 
           data = Utils.get_data(out_file)
