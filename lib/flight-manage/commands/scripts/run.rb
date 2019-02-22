@@ -80,7 +80,7 @@ module FlightManage
             scripts.each do |key, val|
               stages = val['stages'].nil? ? [nil] : val['stages'].split(',')
               roles = val['roles'].nil? ? [nil] : val['roles'].split(',')
-              if stages&.include?(@options.stage) and roles&.include?(@options.role)
+              if stages.include?(@options.stage) and roles.include?(@options.role)
                 matches << File.join(Config.scripts_dir, key)
               end
             end
