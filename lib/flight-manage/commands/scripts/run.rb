@@ -39,15 +39,14 @@ module FlightManage
     module Scripts
       class Run < Command
         def run
-          find_script.each { |script| execute(script) }
+          out_file = find_node_info
+          find_script.each do  |script|
+            communicator = execute(script)
+            output_execution_data(communicator, script, out_file)
+          end
         end
 
         def execute(script_loc)
-          script_name = Utils.get_name_from_script_location(script_loc)
-          script_name = Utils.remove_bash_ext(script_name)
-          # maybe move this up so it's only executed once?
-          node_name, out_file = find_node_info
-
           communicator = nil
           # use this block syntax to temporarily change the working dir
           Dir.chdir(File.dirname(script_loc)) do
@@ -59,6 +58,13 @@ module FlightManage
               process_status: process_status,
             }
           end
+          return communicator
+        end
+
+        def output_execution_data(communicator, script_loc, out_file)
+          script_name = Utils.get_name_from_script_location(script_loc)
+          script_name = Utils.remove_bash_ext(script_name)
+
           time = DateTime.now.to_s
           stdout = communicator[:stdout].chomp
           stderr = communicator[:stderr].chomp
@@ -112,14 +118,13 @@ No scripts found with #{role_str} and #{stage_str}
           unless File.file?(out_file)
             File.open(out_file, 'w') {}
           end
-
           unless File.writable?(out_file)
             raise ArgumentError, <<-ERROR.chomp
 Output file at #{out_file} is not reachable - check permissions and try again
             ERROR
           end
 
-          return node_name, out_file
+          return out_file
         end
       end
     end
