@@ -25,7 +25,39 @@
 # https://github.com/openflighthpc/flight-manage
 # ==============================================================================
 
-require 'flight-manage/commands/nodes/show'
-require 'flight-manage/commands/scripts/list'
-require 'flight-manage/commands/scripts/run'
-require 'flight-manage/commands/scripts/show'
+require 'flight-manage/command'
+require 'flight-manage/utils'
+
+module FlightManage
+  module Commands
+    module Scripts
+      class Show < Command
+        def run
+          # finds the script's location as a form of validation
+          script_loc = Utils.find_script_from_arg(@argv[0])
+          script_name = Utils.get_name_from_script_location(script_loc)
+          script_name = Utils.remove_bash_ext(script_name)
+
+          data_locs = Dir.glob(File.join(Config.data_dir, '*'))
+          data = {}
+          data_locs.each do |path|
+            data[File.basename(path)] = Utils.get_data(path)
+          end
+          out = ''
+          data.each do |node, data_hash|
+            if data_hash.key?(script_name)
+              out << "#{node}: #{data_hash[script_name]['status']}\n"
+            end
+          end
+
+          if out.empty?
+            puts "No execution data found for #{script_name}"
+          else
+            puts "Showing current state of script: #{script_name}\n\n"
+            puts out
+          end
+        end
+      end
+    end
+  end
+end

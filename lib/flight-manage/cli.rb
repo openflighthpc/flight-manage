@@ -109,7 +109,7 @@ module FlightManage
       cli_syntax(c, 'SCRIPT')
       c.description = "Show execution history of a script"
       c.hidden = true
-      action(c, nil)
+      action(c, Commands::Scripts::Show)
     end
 
     command :'script run' do |c|
