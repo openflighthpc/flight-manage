@@ -133,5 +133,13 @@ No files found for #{script_arg}
       end
       return flight_scripts
     end
+
+    # sort the keys of a hash in breadth-first alphanumeric order
+    def self.order_scripts(scripts_hash)
+      scripts_hash = scripts_hash.sort_by do |key, _|
+        [key.split('/').length, key]
+      end
+      scripts_hash.to_h
+    end
   end
 end

@@ -123,6 +123,8 @@ No scripts found with #{role_str} and #{stage_str}
             "stderr" => stderr
           }
 
+          data = Utils.order_scripts(data)
+
           File.open(out_file, 'w') { |f| f.write(data.to_yaml) }
           puts "#{script_name} executed with exit code #{exit_code}"
         end
