@@ -46,6 +46,48 @@ module FlightManage
           end
         end
 
+        def find_node_info
+          node_name = Utils.get_host_name
+          out_file = File.join(FlightManage::Config.data_dir, node_name)
+
+          #if out_file doesn't exist, create it
+          unless File.file?(out_file)
+            File.open(out_file, 'w') {}
+          end
+          unless File.writable?(out_file)
+            raise ArgumentError, <<-ERROR.chomp
+Output file at #{out_file} is not reachable - check permissions and try again
+            ERROR
+          end
+
+          return out_file
+        end
+
+        def find_script
+          if not @options.stage and not @options.role
+            script_loc = Utils.find_script_from_arg(@argv[0])
+            return [script_loc]
+          else
+            matches = []
+            scripts = Utils.find_all_flight_scripts
+            scripts.each do |key, val|
+              stages = val['stages'].nil? ? [nil] : val['stages'].split(',')
+              roles = val['roles'].nil? ? [nil] : val['roles'].split(',')
+              if stages.include?(@options.stage) and roles.include?(@options.role)
+                matches << File.join(Config.scripts_dir, key)
+              end
+            end
+            if matches.empty?
+              role_str = @options.role ? "role '#{@options.role}'" : "no role"
+              stage_str = @options.stage ? "stage '#{@options.stage}'" : "no stage"
+              raise ArgumentError, <<-ERROR.chomp
+No scripts found with #{role_str} and #{stage_str}
+              ERROR
+            end
+            return matches
+          end
+        end
+
         def execute(script_loc)
           communicator = nil
           # use this block syntax to temporarily change the working dir
@@ -83,48 +125,6 @@ module FlightManage
 
           File.open(out_file, 'w') { |f| f.write(data.to_yaml) }
           puts "#{script_name} executed with exit code #{exit_code}"
-        end
-
-        def find_script
-          if not @options.stage and not @options.role
-            script_loc = Utils.find_script_from_arg(@argv[0])
-            return [script_loc]
-          else
-            matches = []
-            scripts = Utils.find_all_flight_scripts
-            scripts.each do |key, val|
-              stages = val['stages'].nil? ? [nil] : val['stages'].split(',')
-              roles = val['roles'].nil? ? [nil] : val['roles'].split(',')
-              if stages.include?(@options.stage) and roles.include?(@options.role)
-                matches << File.join(Config.scripts_dir, key)
-              end
-            end
-            if matches.empty?
-              role_str = @options.role ? "role '#{@options.role}'" : "no role"
-              stage_str = @options.stage ? "stage '#{@options.stage}'" : "no stage"
-              raise ArgumentError, <<-ERROR.chomp
-No scripts found with #{role_str} and #{stage_str}
-              ERROR
-            end
-            return matches
-          end
-        end
-
-        def find_node_info
-          node_name = Utils.get_host_name
-          out_file = File.join(FlightManage::Config.data_dir, node_name)
-
-          #if out_file doesn't exist, create it
-          unless File.file?(out_file)
-            File.open(out_file, 'w') {}
-          end
-          unless File.writable?(out_file)
-            raise ArgumentError, <<-ERROR.chomp
-Output file at #{out_file} is not reachable - check permissions and try again
-            ERROR
-          end
-
-          return out_file
         end
       end
     end
