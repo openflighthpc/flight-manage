@@ -48,6 +48,10 @@ Error parsing yaml in #{location} - aborting
       data
     end
 
+    def self.get_name_from_script_location(loc)
+        loc.gsub(/^#{Config.scripts_dir}/,'')
+    end
+
     def self.find_script_from_arg(arg)
       script_arg = arg
       script_arg = script_arg.gsub(/\.bash$/, '')
@@ -112,7 +116,7 @@ No files found for #{script_arg}
       found = Dir.glob(File.join(Config.scripts_dir, '**/*.bash'))
       flight_scripts = {}
       found.each do |script|
-        script_name = script.gsub(/^#{Config.scripts_dir}/,'')
+        script_name = get_name_from_script_location(script)
         IO.foreach(script) do |line|
           if line =~ /^#FLIGHT/
             flight_scripts[script_name] = {} unless flight_scripts[script_name]

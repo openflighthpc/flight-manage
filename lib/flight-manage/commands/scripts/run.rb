@@ -43,7 +43,7 @@ module FlightManage
         end
 
         def execute(script_loc)
-          script_name = script_loc.gsub(/^#{Config.scripts_dir}/,'')
+          script_name = Utils.get_name_from_script_location(script_loc)
           script_name = script_name.gsub(/\.bash$/,'')
           # maybe move this up so it's only executed once?
           node_name, out_file = find_node_info
