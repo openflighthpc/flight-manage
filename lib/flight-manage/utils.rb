@@ -131,6 +131,7 @@ No files found for #{script_arg}
           end
         end
       end
+      flight_scripts = order_scripts(flight_scripts)
       return flight_scripts
     end
 
