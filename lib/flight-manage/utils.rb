@@ -136,22 +136,22 @@ No files found for #{script_arg}
       found = Dir.glob(File.join(Config.scripts_dir, '**/*.bash'))
       flight_scripts = {}
       found.each do |script|
-        if find_flight_var_info(script)
+        if find_flight_vars(script)
           script_name = get_name_from_script_location(script)
-          flight_scripts[script_name] = find_flight_var_info(script)
+          flight_scripts[script_name] = find_flight_vars(script)
         end
       end
       flight_scripts = order_scripts(flight_scripts)
       return flight_scripts
     end
 
-    def self.find_flight_var_info(script)
+    def self.find_flight_vars(script)
       script_info = nil
       IO.foreach(script) do |line|
         break unless (line =~ /^#/ or line =~ /^$/)
         if line =~ /^#FLIGHT/
           script_info ||= {}
-          match = line.match(/^#FLIGHT(\w*): (.*)$/)
+          match = line.match(/^#FLIGHT(\S*): (.*)$/)
           if match&.captures
             key, val = match.captures
             script_info[key] = val

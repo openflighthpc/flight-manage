@@ -41,7 +41,11 @@ module FlightManage
       class Run < Command
         def run
           out_file = Utils.find_node_info
-          find_script.each do  |script|
+          scripts = find_script
+          scripts.each do |script|
+            error_if_re_run(script, out_file)
+          end
+          scripts.each do |script|
             communicator = execute(script)
             output_execution_data(communicator, script, out_file)
           end
@@ -69,6 +73,20 @@ No scripts found with #{role_str} and #{stage_str}
               ERROR
             end
             return matches
+          end
+        end
+
+        def error_if_re_run(script_loc, node_data_loc)
+          flight_vars = Utils.find_flight_vars(script_loc)
+          rerunable = flight_vars['re-runable'] == 'true'
+          data = Utils.get_data(node_data_loc)
+          script_name = Utils.get_name_from_script_location(script_loc)
+          script_name = Utils.remove_bash_ext(script_name)
+          been_run = data.key?(script_name)
+          if not rerunable and been_run
+            raise ManageError, <<-ERROR.chomp
+Script #{script_name} has been ran and cannot be re-ran
+            ERROR
           end
         end
 
