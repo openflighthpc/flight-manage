@@ -43,8 +43,7 @@ module FlightManage
           node_file = Utils.find_node_info
           data = Utils.get_data(node_file)
 
-          #THIS may break
-          unless data[script_name].fetch('status', false) == 'FAIL'
+          unless data.dig(script_name, 'status') == 'FAIL'
             raise ArgumentError, <<-ERROR.chomp
 Invalid command - #{script_name} has not failed on this node
             ERROR
