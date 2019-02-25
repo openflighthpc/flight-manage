@@ -123,5 +123,12 @@ module FlightManage
         "Run all scripts with STAGE (and no ROLE unless --role is passed)"
       action(c, Commands::Scripts::Run)
     end
+
+    command :'script resolve' do |c|
+      cli_syntax(c, 'SCRIPT')
+      c.description = "Mark a script as having been completed externally"
+      c.hidden = true
+      action(c, Commands::Scripts::Resolve)
+    end
   end
 end

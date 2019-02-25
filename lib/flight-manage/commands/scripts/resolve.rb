@@ -25,8 +25,35 @@
 # https://github.com/openflighthpc/flight-manage
 # ==============================================================================
 
-require 'flight-manage/commands/nodes/show'
-require 'flight-manage/commands/scripts/list'
-require 'flight-manage/commands/scripts/resolve'
-require 'flight-manage/commands/scripts/run'
-require 'flight-manage/commands/scripts/show'
+require 'flight-manage/command'
+require 'flight-manage/utils'
+
+module FlightManage
+  module Commands
+    module Scripts
+      class Resolve < Command
+        def run
+          # finds the script's location as a form of validation
+          script_loc = Utils.find_script_from_arg(@argv[0])
+          script_name = Utils.get_name_from_script_location(script_loc)
+          script_name = Utils.remove_bash_ext(script_name)
+
+          node_file = Utils.find_node_info
+          data = Utils.get_data(node_file)
+
+          #THIS may break
+          unless data[script_name].fetch('status', false) == 'FAIL'
+            raise ArgumentError, <<-ERROR.chomp
+Invalid command - #{script_name} has not failed on this node
+            ERROR
+          end
+
+          data[script_name]['status'] = 'RESOLVED'
+
+          File.open(node_file, 'w') { |f| f.write(data.to_yaml) }
+          p "#{script_name} marked as resolved"
+        end
+      end
+    end
+  end
+end
