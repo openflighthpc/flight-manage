@@ -53,7 +53,7 @@ module FlightManage
 
         def find_script
           if not @options.stage and not @options.role
-            script_loc = Utils.find_script_from_arg(@argv[0])
+            script_loc = Utils.find_script_from_arg(@argv[0], validate = true)
             return [script_loc]
           else
             matches = []
