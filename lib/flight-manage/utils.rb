@@ -136,21 +136,29 @@ No files found for #{script_arg}
       found = Dir.glob(File.join(Config.scripts_dir, '**/*.bash'))
       flight_scripts = {}
       found.each do |script|
-        script_name = get_name_from_script_location(script)
-        IO.foreach(script) do |line|
-          break unless (line =~ /^#/ or line =~ /^$/)
-          if line =~ /^#FLIGHT/
-            flight_scripts[script_name] = {} unless flight_scripts[script_name]
-            match = line.match(/^#FLIGHT(\w*): (.*)$/)
-            if match&.captures
-              key, val = match.captures
-              flight_scripts[script_name][key] = val
-            end
-          end
+        if find_flight_var_info(script)
+          script_name = get_name_from_script_location(script)
+          flight_scripts[script_name] = find_flight_var_info(script)
         end
       end
       flight_scripts = order_scripts(flight_scripts)
       return flight_scripts
+    end
+
+    def self.find_flight_var_info(script)
+      script_info = nil
+      IO.foreach(script) do |line|
+        break unless (line =~ /^#/ or line =~ /^$/)
+        if line =~ /^#FLIGHT/
+          script_info ||= {}
+          match = line.match(/^#FLIGHT(\w*): (.*)$/)
+          if match&.captures
+            key, val = match.captures
+            script_info[key] = val
+          end
+        end
+      end
+      return script_info
     end
 
     # sort the keys of a hash in breadth-first alphanumeric order
