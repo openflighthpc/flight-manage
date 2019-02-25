@@ -88,36 +88,6 @@ Script at #{script_loc} is not a flight script
         ERROR
       end
       return script_loc
-=begin
-#TODO finish this
-          glob_str = File.join(
-            FlightManage::Config.scripts_dir,
-            #still doesn't work for multilvl systems
-            "#{script_arg}**/*.bash"
-          )
-          found = Dir.glob(glob_str)
-
-          if found.empty?
-            raise ArgumentError, <<-ERROR.chomp
-No files found for #{script_arg}
-            ERROR
-          elsif found.length == 1
-            script_loc = found[0]
-          else
-            file_names = found.map { |p| File.basename(p, File.extname(p)) }
-            # if the results include just the search val, return that path
-            if file_names.include?(script_arg)
-              script_loc = found.select { |p| p =~ /#{script_arg}\.bash$/ }[0]
-            else
-              $stderr.puts "Ambiguous search term '#{script_arg}'"\
-              " - possible results are:"
-              file_names.each_slice(3).each { |p| $stderr.puts p.join("  ") }
-              raise ArgumentError, <<-ERROR.chomp
-  Please refine your search.
-              ERROR
-            end
-          end
-=end
     end
 
     def self.is_flight_script?(script)
