@@ -138,6 +138,7 @@ No files found for #{script_arg}
       found.each do |script|
         script_name = get_name_from_script_location(script)
         IO.foreach(script) do |line|
+          break unless (line =~ /^#/ or line =~ /^$/)
           if line =~ /^#FLIGHT/
             flight_scripts[script_name] = {} unless flight_scripts[script_name]
             match = line.match(/^#FLIGHT(\w*): (.*)$/)
