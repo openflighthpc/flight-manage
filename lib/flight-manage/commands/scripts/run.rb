@@ -28,6 +28,7 @@
 require 'flight-manage/command'
 require 'flight-manage/config'
 require 'flight-manage/exceptions'
+require 'flight-manage/logger'
 require 'flight-manage/utils'
 
 require 'date'
@@ -114,11 +115,9 @@ No scripts found with #{role_str} and #{stage_str}
         end
 
         def log(script_name, out_file, exit_code, time)
-          FileUtils.mkdir_p(File.dirname(Config.log_file))
           node_name = File.basename(out_file)
-          File.open(Config.log_file, 'a') do |f|
-            f.write "#{time} - #{node_name} - #{script_name}: #{exit_code}\n"
-          end
+          line = "#{time} - #{node_name} - #{script_name}: #{exit_code}"
+          Logger.new.log(line)
         end
       end
     end
