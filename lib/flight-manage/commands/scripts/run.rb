@@ -39,28 +39,11 @@ module FlightManage
     module Scripts
       class Run < Command
         def run
-          out_file = find_node_info
+          out_file = Utils.find_node_info
           find_script.each do  |script|
             communicator = execute(script)
             output_execution_data(communicator, script, out_file)
           end
-        end
-
-        def find_node_info
-          node_name = Utils.get_host_name
-          out_file = File.join(FlightManage::Config.data_dir, node_name)
-
-          #if out_file doesn't exist, create it
-          unless File.file?(out_file)
-            File.open(out_file, 'w') {}
-          end
-          unless File.writable?(out_file)
-            raise ArgumentError, <<-ERROR.chomp
-Output file at #{out_file} is not reachable - check permissions and try again
-            ERROR
-          end
-
-          return out_file
         end
 
         def find_script

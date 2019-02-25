@@ -56,6 +56,23 @@ Error parsing yaml in #{location} - aborting
         loc.gsub(/^#{Config.scripts_dir}/,'')
     end
 
+    def self.find_node_info
+      node_name = get_host_name
+      out_file = File.join(FlightManage::Config.data_dir, node_name)
+
+      #if out_file doesn't exist, create it
+      unless File.file?(out_file)
+        File.open(out_file, 'w') {}
+      end
+      unless File.writable?(out_file)
+        raise ArgumentError, <<-ERROR.chomp
+Output file at #{out_file} is not reachable - check permissions and try again
+        ERROR
+      end
+
+      return out_file
+    end
+
     def self.find_script_from_arg(arg)
       script_arg = remove_bash_ext(arg)
       script_loc = File.join(Config.scripts_dir, "#{script_arg}.bash")
@@ -140,6 +157,7 @@ No files found for #{script_arg}
       scripts_hash = scripts_hash.sort_by do |key, _|
         [key.split('/').length, key]
       end
+      #calling sort on a hash converts it to an array which must be reverted
       scripts_hash.to_h
     end
   end
