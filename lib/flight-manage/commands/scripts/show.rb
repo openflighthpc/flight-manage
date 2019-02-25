@@ -35,8 +35,7 @@ module FlightManage
         def run
           # finds the script's location as a form of validation
           script_loc = Utils.find_script_from_arg(@argv[0])
-          script_name = Utils.get_name_from_script_location(script_loc)
-          script_name = Utils.remove_bash_ext(script_name)
+          script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
 
           data_locs = Dir.glob(File.join(Config.data_dir, '*'))
           data = {}

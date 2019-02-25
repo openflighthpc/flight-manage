@@ -53,7 +53,11 @@ Error parsing yaml in #{location} - aborting
     end
 
     def self.get_name_from_script_location(loc)
-        loc.gsub(/^#{Config.scripts_dir}/,'')
+      loc.gsub(/^#{Config.scripts_dir}/,'')
+    end
+
+    def self.get_name_from_script_loc_without_bash(loc)
+      remove_bash_ext(get_name_from_script_location(loc))
     end
 
     def self.find_node_info

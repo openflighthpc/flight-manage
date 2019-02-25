@@ -80,8 +80,7 @@ No scripts found with #{role_str} and #{stage_str}
           flight_vars = Utils.find_flight_vars(script_loc)
           rerunable = flight_vars['re-runable'] == 'true'
           data = Utils.get_data(node_data_loc)
-          script_name = Utils.get_name_from_script_location(script_loc)
-          script_name = Utils.remove_bash_ext(script_name)
+          script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
           been_run = data.key?(script_name)
           if not rerunable and been_run
             raise ManageError, <<-ERROR.chomp
@@ -106,8 +105,7 @@ Script #{script_name} has been ran and cannot be re-ran
         end
 
         def output_execution_data(communicator, script_loc, out_file)
-          script_name = Utils.get_name_from_script_location(script_loc)
-          script_name = Utils.remove_bash_ext(script_name)
+          script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
 
           time = DateTime.now.to_s
           stdout = communicator[:stdout].chomp
