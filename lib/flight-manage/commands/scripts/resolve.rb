@@ -26,7 +26,10 @@
 # ==============================================================================
 
 require 'flight-manage/command'
+require 'flight-manage/logger'
 require 'flight-manage/utils'
+
+require 'date'
 
 module FlightManage
   module Commands
@@ -49,9 +52,15 @@ Invalid command - #{script_name} has not failed on this node
           end
 
           data[script_name]['status'] = 'RESOLVED'
-
+          log(node_file, script_name)
           File.open(node_file, 'w') { |f| f.write(data.to_yaml) }
-          p "#{script_name} marked as resolved"
+          puts "#{script_name} has been marked as resolved"
+        end
+
+        def log(node_file, script_name)
+          node = File.basename(node_file)
+          time = DateTime.now.to_s
+          Logger.new.log("#{time} - #{node} - #{script_name} - Resolved")
         end
       end
     end
