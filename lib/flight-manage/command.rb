@@ -7,7 +7,7 @@
 # the terms of the Eclipse Public License 2.0 which is available at
 # <https://www.eclipse.org/legal/epl-2.0>, or alternative license
 # terms made available by Alces Flight Ltd - please direct inquiries
-# about licensing to licensing@alces-software.com.
+# about licensing to licensing@alces-flight.com.
 #
 # Flight Manage is distributed in the hope that it will be useful, but
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR
