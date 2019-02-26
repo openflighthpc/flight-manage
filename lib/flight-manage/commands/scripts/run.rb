@@ -132,8 +132,7 @@ Script #{script_name} has been ran and cannot be re-ran
 
         def log(script_name, out_file, exit_code, time)
           node_name = File.basename(out_file)
-          line = "#{time} - #{node_name} - #{script_name}: #{exit_code}"
-          Logger.new.log(line)
+          Logger.new.log(time, node_name, "#{script_name}: #{exit_code}")
         end
       end
     end

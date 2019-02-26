@@ -33,9 +33,9 @@ module FlightManage
       FileUtils.mkdir_p(File.dirname(Config.log_file))
     end
 
-    def log(line)
-      line.chomp!
-      line << "\n"
+    def log(*args)
+      args.map! { |arg| arg.to_s.chomp }
+      line = args.join(' - ') << "\n"
       File.open(Config.log_file, 'a') { |f| f.write(line) }
     end
   end

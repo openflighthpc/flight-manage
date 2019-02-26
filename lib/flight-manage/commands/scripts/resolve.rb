@@ -58,7 +58,7 @@ Invalid command - #{script_name} has not failed on this node
         def log(node_file, script_name)
           node = File.basename(node_file)
           time = DateTime.now.to_s
-          Logger.new.log("#{time} - #{node} - #{script_name} - Resolved")
+          Logger.new.log(time, node, script_name, 'Resolved')
         end
       end
     end
