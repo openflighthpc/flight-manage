@@ -36,23 +36,7 @@ module FlightManage
             script_loc = find_script_from_arg(@argv[0], validate = true)
             return [script_loc]
           else
-            matches = []
-            scripts = Utils.find_all_flight_scripts
-            scripts.each do |key, val|
-              stages = val['stages'].nil? ? [nil] : val['stages'].split(',')
-              roles = val['roles'].nil? ? [nil] : val['roles'].split(',')
-              if stages.include?(@options.stage) and roles.include?(@options.role)
-                matches << File.join(Config.scripts_dir, key)
-              end
-            end
-            if matches.empty?
-              role_str = @options.role ? "role '#{@options.role}'" : "no role"
-              stage_str = @options.stage ? "stage '#{@options.stage}'" : "no stage"
-              raise ArgumentError, <<-ERROR.chomp
-No scripts found with #{role_str} and #{stage_str}
-              ERROR
-            end
-            return matches
+            return find_scripts_with_role_and_stage
           end
         end
 
@@ -74,6 +58,27 @@ No scripts found with #{role_str} and #{stage_str}
     Script at #{script_loc} is not a flight script
             ERROR
           end
+        end
+
+        def find_scripts_with_role_and_stage
+          matches = []
+          Utils.find_all_flight_scripts.each do |key, val|
+            stages = val['stages'].nil? ? [nil] : val['stages'].split(',')
+            roles = val['roles'].nil? ? [nil] : val['roles'].split(',')
+            if stages.include?(@options.stage) and roles.include?(@options.role)
+              matches << File.join(Config.scripts_dir, key)
+            end
+          end
+          error_from_role_and_stage if matches.empty?
+          return matches
+        end
+
+        def error_from_role_and_stage
+          role_str = @options.role ? "role '#{@options.role}'" : "no role"
+          stage_str = @options.stage ? "stage '#{@options.stage}'" : "no stage"
+          raise ArgumentError, <<-ERROR.chomp
+No scripts found with #{role_str} and #{stage_str}
+          ERROR
         end
       end
     end
