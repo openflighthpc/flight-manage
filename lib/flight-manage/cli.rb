@@ -129,8 +129,9 @@ module FlightManage
     end
 
     command :'script resolve' do |c|
-      cli_syntax(c, 'SCRIPT')
+      cli_syntax(c, '[SCRIPT]')
       c.description = "Mark a script as having been completed externally"
+      add_role_and_stage_options(c)
       c.hidden = true
       action(c, Commands::Scripts::Resolve)
     end

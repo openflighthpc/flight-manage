@@ -35,23 +35,23 @@ module FlightManage
     module Scripts
       class Resolve < ScriptCommand
         def run
-          # finds the script's location as a form of validation
-          script_loc = find_script_from_arg(@argv[0], validate = false)
-          script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
-
           node_file = Utils.find_node_info
+
+          find_scripts.each { |s| resolve(s, node_file) }
+        end
+
+        def resolve(script_loc, node_file)
+          script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
           data = Utils.get_data(node_file)
 
           unless data.dig(script_name, 'status') == 'FAIL'
-            raise ArgumentError, <<-ERROR.chomp
-Invalid command - #{script_name} has not failed on this node
-            ERROR
+            puts "#{script_name} has not failed on this node - skipping"
+          else
+            data[script_name]['status'] = 'RESOLVED'
+            log(node_file, script_name)
+            File.open(node_file, 'w') { |f| f.write(data.to_yaml) }
+            puts "#{script_name} has been marked as resolved"
           end
-
-          data[script_name]['status'] = 'RESOLVED'
-          log(node_file, script_name)
-          File.open(node_file, 'w') { |f| f.write(data.to_yaml) }
-          puts "#{script_name} has been marked as resolved"
         end
 
         def log(node_file, script_name)
