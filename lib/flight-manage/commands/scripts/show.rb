@@ -25,16 +25,15 @@
 # https://github.com/openflighthpc/flight-manage
 # ==============================================================================
 
-require 'flight-manage/command'
 require 'flight-manage/utils'
 
 module FlightManage
   module Commands
     module Scripts
-      class Show < Command
+      class Show < ScriptCommand
         def run
           # finds the script's location as a form of validation
-          script_loc = Utils.find_script_from_arg(@argv[0], validate = false)
+          script_loc = find_script_from_arg(@argv[0], validate = false)
           script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
 
           data_locs = Dir.glob(File.join(Config.data_dir, '*'))

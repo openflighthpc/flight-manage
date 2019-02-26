@@ -27,6 +27,7 @@
 
 require 'flight-manage/commands/nodes/show'
 require 'flight-manage/commands/scripts/list'
+require 'flight-manage/commands/scripts/script_command'
 require 'flight-manage/commands/scripts/resolve'
 require 'flight-manage/commands/scripts/run'
 require 'flight-manage/commands/scripts/show'

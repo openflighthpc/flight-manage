@@ -25,7 +25,6 @@
 # https://github.com/openflighthpc/flight-manage
 # ==============================================================================
 
-require 'flight-manage/command'
 require 'flight-manage/config'
 require 'flight-manage/exceptions'
 require 'flight-manage/logger'
@@ -38,41 +37,16 @@ require 'yaml'
 module FlightManage
   module Commands
     module Scripts
-      class Run < Command
+      class Run < ScriptCommand
         def run
           out_file = Utils.find_node_info
-          scripts = find_script
+          scripts = find_scripts
           scripts.each do |script|
             error_if_re_run(script, out_file)
           end
           scripts.each do |script|
             communicator = execute(script)
             output_execution_data(communicator, script, out_file)
-          end
-        end
-
-        def find_script
-          if not @options.stage and not @options.role
-            script_loc = Utils.find_script_from_arg(@argv[0], validate = true)
-            return [script_loc]
-          else
-            matches = []
-            scripts = Utils.find_all_flight_scripts
-            scripts.each do |key, val|
-              stages = val['stages'].nil? ? [nil] : val['stages'].split(',')
-              roles = val['roles'].nil? ? [nil] : val['roles'].split(',')
-              if stages.include?(@options.stage) and roles.include?(@options.role)
-                matches << File.join(Config.scripts_dir, key)
-              end
-            end
-            if matches.empty?
-              role_str = @options.role ? "role '#{@options.role}'" : "no role"
-              stage_str = @options.stage ? "stage '#{@options.stage}'" : "no stage"
-              raise ArgumentError, <<-ERROR.chomp
-No scripts found with #{role_str} and #{stage_str}
-              ERROR
-            end
-            return matches
           end
         end
 

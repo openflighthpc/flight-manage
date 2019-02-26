@@ -77,26 +77,6 @@ Output file at #{out_file} is not reachable - check permissions and try again
       return out_file
     end
 
-    def self.find_script_from_arg(arg, validate = false)
-      script_arg = remove_bash_ext(arg)
-      script_loc = File.join(Config.scripts_dir, "#{script_arg}.bash")
-      validate_script(script_loc) if validate
-      return script_loc
-    end
-
-    def self.validate_script(script_loc)
-      unless File.file?(script_loc) and File.readable?(script_loc)
-        raise ArgumentError, <<-ERROR.chomp
-Script at #{script_loc} is not reachable
-        ERROR
-      end
-      unless is_flight_script?(script_loc)
-        raise ArgumentError, <<-ERROR.chomp
-Script at #{script_loc} is not a flight script
-        ERROR
-      end
-    end
-
     def self.is_flight_script?(script)
       #NB: File.read & File.readlines both load the entire file into mem
       flight = false
