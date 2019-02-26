@@ -37,7 +37,11 @@ module FlightManage
       class List < Command
         def run
           # maybe list non flight scripts with an 'X'
-          Utils.find_all_flight_scripts.keys.each { |s| puts s }
+          Utils.find_all_flight_scripts.each do |script, vars|
+            str = script.dup
+            str << " - #{vars['description']}" if vars.key?('description')
+            puts str
+          end
         end
       end
     end
