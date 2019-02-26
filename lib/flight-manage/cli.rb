@@ -77,6 +77,13 @@ module FlightManage
           args_str
         ].compact.join(' ')
       end
+
+      def add_role_and_stage_options(command)
+        command.option '-r', '--role ROLE',
+          "Run all scripts with ROLE (and no STAGE unless --stage is passed)"
+        command.option '-s', '--stage STAGE',
+          "Run all scripts with STAGE (and no ROLE unless --role is passed)"
+      end
     end
 
     command :node do |c|
@@ -116,11 +123,8 @@ module FlightManage
     command :'script run' do |c|
       cli_syntax(c, '[SCRIPT]')
       c.description = "Execute scripts"
+      add_role_and_stage_options(c)
       c.hidden = true
-      c.option '-r', '--role ROLE',
-        "Run all scripts with ROLE (and no STAGE unless --stage is passed)"
-      c.option '-s', '--stage STAGE',
-        "Run all scripts with STAGE (and no ROLE unless --role is passed)"
       action(c, Commands::Scripts::Run)
     end
 
