@@ -6,17 +6,28 @@ GIT
     commander (4.4.4.pre.alces2)
       highline (~> 1.7.2)
 
+GIT
+  remote: https://github.com/alces-software/flight_config
+  revision: 0a0137d42fd5d6122e56b827c400bafa93b82520
+  specs:
+    flight_config (0.1.0)
+      fakefs
+      tty-config
+
 GEM
   remote: https://rubygems.org/
   specs:
+    fakefs (0.19.2)
     highline (1.7.10)
     paint (2.1.0)
+    tty-config (0.3.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   commander!
+  flight_config!
   paint
 
 BUNDLED WITH
