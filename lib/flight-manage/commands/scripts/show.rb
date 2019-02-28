@@ -33,8 +33,7 @@ module FlightManage
     module Scripts
       class Show < ScriptCommand
         def run
-          script_loc = find_script_from_arg(@argv[0], validate = false)
-          script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
+          script_name = Utils.remove_bash_ext(@argv[0])
 
           state_files = Models::StateFile.glob_read('*')
 

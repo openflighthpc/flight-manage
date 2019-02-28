@@ -42,7 +42,7 @@ module FlightManage
         end
 
         def resolve(script_path, state_file)
-          script_name = Utils.get_name_from_script_loc_without_bash(script_path)
+          script_name = Utils.remove_bash_ext(@argv[0])
           data = state_file.__data__.to_h
 
           unless data.dig(script_name, 'status') == 'FAIL'

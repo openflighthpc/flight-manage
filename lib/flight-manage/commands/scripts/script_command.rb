@@ -31,9 +31,9 @@ module FlightManage
   module Commands
     module Scripts
       class ScriptCommand < Command
-        def find_scripts
+        def find_scripts(validate = false)
           if not @options.stage and not @options.role
-            script_loc = find_script_from_arg(@argv[0], validate = true)
+            script_loc = find_script_from_arg(@argv[0], validate)
             return [script_loc]
           else
             return find_scripts_with_role_and_stage
@@ -50,12 +50,12 @@ module FlightManage
         def validate_script(script_loc)
           unless File.file?(script_loc) and File.readable?(script_loc)
             raise ArgumentError, <<-ERROR.chomp
-    Script at #{script_loc} is not reachable
+Script at #{File.expand_path(script_loc)} is not reachable
             ERROR
           end
           unless Utils.is_flight_script?(script_loc)
             raise ArgumentError, <<-ERROR.chomp
-    Script at #{script_loc} is not a flight script
+Script at #{File.expand_path(script_loc)} is not a flight script
             ERROR
           end
         end

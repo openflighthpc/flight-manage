@@ -33,7 +33,6 @@ require 'flight-manage/utils'
 
 require 'date'
 require 'open3'
-require 'yaml'
 
 module FlightManage
   module Commands
@@ -42,7 +41,7 @@ module FlightManage
         def run
           node = Utils.get_host_name
           data = Models::StateFile.read_or_new(node).__data__.to_h
-          scripts = find_scripts
+          scripts = find_scripts(validate = true)
           scripts.each do |script|
             error_if_re_run(script, data)
           end
