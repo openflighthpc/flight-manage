@@ -45,9 +45,11 @@ module FlightManage
           scripts.each do |script|
             error_if_re_run(script, data)
           end
-          scripts.each do |script|
-            exec_values = execute(script)
-            output_execution_data(exec_values, script, node)
+          Models::StateFile.create_or_update(node) do |sf|
+            scripts.each do |script|
+              exec_values = execute(script)
+              output_execution_data(exec_values, script, sf)
+            end
           end
         end
 
@@ -88,16 +90,14 @@ Script #{script_name} cannot be re-ran or has failed on this node
           return exec_values
         end
 
-        def output_execution_data(exec_values, script_loc, node)
+        def output_execution_data(exec_values, script_loc, sf)
           script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
           exit_code = exec_values['exit_code']
 
           # maybe order the script names in the yaml
-          Models::StateFile.create_or_update(node) do |sf|
-            sf.set_script_values(script_name, exec_values)
-          end
+          sf.set_script_values(script_name, exec_values)
 
-          log(script_name, node, exit_code, exec_values['time'])
+          log(script_name, sf.node, exit_code, exec_values['time'])
           puts "#{script_name} executed with exit code #{exit_code}"
         end
 
