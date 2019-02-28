@@ -36,13 +36,14 @@ module FlightManage
     module Scripts
       class Resolve < ScriptCommand
         def run
-          state_file = Models::StateFile.read_or_new(Utils.get_host_name)
-
-          find_scripts.each { |s| resolve(s, state_file) }
+          scripts = find_scripts
+          Models::StateFile.update(Utils.get_host_name) do |sf|
+            scripts.each { |s| resolve(s, sf) }
+          end
         end
 
         def resolve(script_path, state_file)
-          script_name = Utils.remove_bash_ext(@argv[0])
+          script_name = Utils.get_name_from_script_loc_without_bash(script_path)
           data = state_file.__data__.to_h
 
           unless data.dig(script_name, 'status') == 'FAIL'
@@ -50,9 +51,7 @@ module FlightManage
           else
             script_data = data[script_name]
             script_data['status'] = 'RESOLVED'
-            Models::StateFile.update(state_file.node) do |sf|
-              sf.set_script_values(script_name, script_data)
-            end
+            state_file.set_script_values(script_name, script_data)
             log(state_file.node, script_name)
             puts "#{script_name} has been marked as resolved"
           end
