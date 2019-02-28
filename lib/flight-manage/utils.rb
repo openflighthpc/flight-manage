@@ -33,21 +33,6 @@ module FlightManage
       Socket.gethostname.split('.')[0]
     end
 
-    def self.get_data(location)
-      data = nil
-      begin
-        File.open(location) do |f|
-          data = YAML.safe_load(f)
-        end
-      rescue Psych::SyntaxError
-        raise ParseError, <<-ERROR.chomp
-Error parsing yaml in #{location} - aborting
-        ERROR
-      end
-      data = {} if data.nil?
-      data
-    end
-
     def self.remove_bash_ext(str)
       str.gsub(/\.bash$/, '')
     end
@@ -58,23 +43,6 @@ Error parsing yaml in #{location} - aborting
 
     def self.get_name_from_script_loc_without_bash(loc)
       remove_bash_ext(get_name_from_script_location(loc))
-    end
-
-    def self.find_node_info
-      node_name = get_host_name
-      out_file = File.join(FlightManage::Config.data_dir, node_name)
-
-      #if out_file doesn't exist, create it
-      unless File.file?(out_file)
-        File.open(out_file, 'w') {}
-      end
-      unless File.writable?(out_file)
-        raise ArgumentError, <<-ERROR.chomp
-Output file at #{out_file} is not reachable - check permissions and try again
-        ERROR
-      end
-
-      return out_file
     end
 
     def self.is_flight_script?(script)
@@ -98,8 +66,7 @@ Output file at #{out_file} is not reachable - check permissions and try again
           flight_scripts[script_name] = find_flight_vars(script)
         end
       end
-      flight_scripts = order_scripts(flight_scripts)
-      return flight_scripts
+      return order_scripts(flight_scripts)
     end
 
     def self.find_flight_vars(script)
