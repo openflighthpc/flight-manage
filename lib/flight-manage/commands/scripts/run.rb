@@ -52,15 +52,19 @@ module FlightManage
         end
 
         def error_if_re_run(script_loc, data)
-          flight_vars = Utils.find_flight_vars(script_loc)
-          rerunable = flight_vars['re-runable'] == 'true'
-
           script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
+
+          flight_vars = Utils.find_flight_vars(script_loc)
+          rerunable = (flight_vars['rerunable'] == 'true')
+          rerunable ||= (flight_vars['rerunnable'] == 'true')
+          # don't allow re-running of failed scripts
+          rerunable = false if data.dig(script_name, 'status') == 'FAIL'
+
           been_run = data.key?(script_name)
 
           if not rerunable and been_run
             raise ManageError, <<-ERROR.chomp
-Script #{script_name} has been ran and cannot be re-ran
+Script #{script_name} cannot be re-ran or has failed on this node
             ERROR
           end
         end
