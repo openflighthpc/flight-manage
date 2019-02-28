@@ -26,6 +26,7 @@
 # ==============================================================================
 
 require 'flight-manage/logger'
+require 'flight-manage/models/state_file'
 require 'flight-manage/utils'
 
 require 'date'
@@ -35,27 +36,29 @@ module FlightManage
     module Scripts
       class Resolve < ScriptCommand
         def run
-          node_file = Utils.find_node_info
+          state_file = Models::StateFile.read_or_new(Utils.get_host_name)
 
-          find_scripts.each { |s| resolve(s, node_file) }
+          find_scripts.each { |s| resolve(s, state_file) }
         end
 
-        def resolve(script_loc, node_file)
-          script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
-          data = Utils.get_data(node_file)
+        def resolve(script_path, state_file)
+          script_name = Utils.get_name_from_script_loc_without_bash(script_path)
+          data = state_file.__data__.to_h
 
           unless data.dig(script_name, 'status') == 'FAIL'
             puts "#{script_name} has not failed on this node - skipping"
           else
-            data[script_name]['status'] = 'RESOLVED'
-            log(node_file, script_name)
-            File.open(node_file, 'w') { |f| f.write(data.to_yaml) }
+            script_data = data[script_name]
+            script_data['status'] = 'RESOLVED'
+            Models::StateFile.update(state_file.node) do |sf|
+              sf.set_script_values(script_name, script_data)
+            end
+            log(state_file.node, script_name)
             puts "#{script_name} has been marked as resolved"
           end
         end
 
-        def log(node_file, script_name)
-          node = File.basename(node_file)
+        def log(node, script_name)
           time = DateTime.now.to_s
           Logger.new.log(time, node, script_name, 'Resolved')
         end

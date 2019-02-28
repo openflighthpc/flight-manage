@@ -28,6 +28,7 @@
 require 'flight-manage/config'
 require 'flight-manage/exceptions'
 require 'flight-manage/logger'
+require 'flight-manage/models/state_file'
 require 'flight-manage/utils'
 
 require 'date'
@@ -39,23 +40,25 @@ module FlightManage
     module Scripts
       class Run < ScriptCommand
         def run
-          out_file = Utils.find_node_info
+          node = Utils.get_host_name
+          data = Models::StateFile.read_or_new(node).__data__.to_h
           scripts = find_scripts
           scripts.each do |script|
-            error_if_re_run(script, out_file)
+            error_if_re_run(script, data)
           end
           scripts.each do |script|
-            communicator = execute(script)
-            output_execution_data(communicator, script, out_file)
+            exec_values = execute(script)
+            output_execution_data(exec_values, script, node)
           end
         end
 
-        def error_if_re_run(script_loc, node_data_loc)
+        def error_if_re_run(script_loc, data)
           flight_vars = Utils.find_flight_vars(script_loc)
           rerunable = flight_vars['re-runable'] == 'true'
-          data = Utils.get_data(node_data_loc)
+
           script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
           been_run = data.key?(script_name)
+
           if not rerunable and been_run
             raise ManageError, <<-ERROR.chomp
 Script #{script_name} has been ran and cannot be re-ran
@@ -64,49 +67,39 @@ Script #{script_name} has been ran and cannot be re-ran
         end
 
         def execute(script_loc)
-          communicator = nil
+          exec_values = nil
           # use this block syntax to temporarily change the working dir
           Dir.chdir(File.dirname(script_loc)) do
           # need to switch to popen3 if we want to manipulate the thread
             stdout, stderr, process_status = Open3.capture3(script_loc)
-            communicator = {
-              stdout: stdout,
-              stderr: stderr,
-              process_status: process_status,
+            exit_code = process_status.exitstatus
+            status = exit_code == 0 ? "OK" : "FAIL"
+            exec_values = {
+              'time' => DateTime.now.to_s,
+              'status' => status,
+              'exit_code' => exit_code,
+              'stdout' => stdout.chomp,
+              'stderr' => stderr.chomp
             }
           end
-          return communicator
+          return exec_values
         end
 
-        def output_execution_data(communicator, script_loc, out_file)
+        def output_execution_data(exec_values, script_loc, node)
           script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
+          exit_code = exec_values['exit_code']
 
-          time = DateTime.now.to_s
-          stdout = communicator[:stdout].chomp
-          stderr = communicator[:stderr].chomp
-          exit_code = communicator[:process_status].exitstatus
-          status = exit_code == 0 ? "OK" : "FAIL"
+          # maybe order the script names in the yaml
+          Models::StateFile.create_or_update(node) do |sf|
+            sf.set_script_values(script_name, exec_values)
+          end
 
-          data = Utils.get_data(out_file)
-
-          data[script_name] = {
-            "time" => time,
-            "status" => status,
-            "exit_code" => exit_code,
-            "stdout" => stdout,
-            "stderr" => stderr
-          }
-
-          data = Utils.order_scripts(data)
-
-          File.open(out_file, 'w') { |f| f.write(data.to_yaml) }
-          log(script_name, out_file, exit_code, time)
+          log(script_name, node, exit_code, exec_values['time'])
           puts "#{script_name} executed with exit code #{exit_code}"
         end
 
-        def log(script_name, out_file, exit_code, time)
-          node_name = File.basename(out_file)
-          Logger.new.log(time, node_name, "#{script_name}: #{exit_code}")
+        def log(script_name, node, exit_code, time)
+          Logger.new.log(time, node, "#{script_name}: #{exit_code}")
         end
       end
     end

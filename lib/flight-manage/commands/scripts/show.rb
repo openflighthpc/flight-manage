@@ -25,6 +25,7 @@
 # https://github.com/openflighthpc/flight-manage
 # ==============================================================================
 
+require 'flight-manage/models/state_file'
 require 'flight-manage/utils'
 
 module FlightManage
@@ -32,14 +33,14 @@ module FlightManage
     module Scripts
       class Show < ScriptCommand
         def run
-          # finds the script's location as a form of validation
           script_loc = find_script_from_arg(@argv[0], validate = false)
           script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
 
-          data_locs = Dir.glob(File.join(Config.data_dir, '*'))
+          state_files = Models::StateFile.glob_read('*')
+
           data = {}
-          data_locs.each do |path|
-            data[File.basename(path)] = Utils.get_data(path)
+          state_files.each do |sf|
+            data[sf.node] = sf.__data__.to_h
           end
           out = ''
           data.each do |node, data_hash|
