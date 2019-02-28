@@ -49,9 +49,15 @@ module FlightManage
 
     def initialize
       @root_dir = File.expand_path(File.join(File.dirname(__FILE__), '../..'))
-      @data_dir = '/opt/service/flight/managedata/'
-      @scripts_dir = '/opt/service/scripts/'
-      @log_file = File.join(@root_dir, 'var/log/manage.log')
+      @conf_file = File.join(@root_dir, 'etc/manage.conf')
+      conf = if File.readable?(@conf_file)
+               File.open(@conf_file) { |f| data = YAML.safe_load(f) }
+             else
+               {}
+             end
+      @data_dir = conf['data_dir'] || '/opt/service/flight/managedata/'
+      @scripts_dir = conf['scripts_dir'] || '/opt/service/scripts/'
+      @log_file = conf['log_file'] || File.join(@root_dir, 'var/log/manage.log')
     end
   end
 end
