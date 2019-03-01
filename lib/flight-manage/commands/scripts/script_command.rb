@@ -32,7 +32,11 @@ module FlightManage
     module Scripts
       class ScriptCommand < Command
         def find_scripts(validate = false)
-          if not @options.stage and not @options.role
+          if not @options.stage and not @options.role and not @argv[0]
+            raise ArgumentError, <<-ERROR.chomp
+Please provide either a script, a role, or a stage
+            ERROR
+          elsif not @options.stage and not @options.role
             script_loc = find_script_from_arg(@argv[0], validate)
             return [script_loc]
           else
