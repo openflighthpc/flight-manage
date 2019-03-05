@@ -8,16 +8,19 @@ GIT
 
 GIT
   remote: https://github.com/alces-software/flight_config
-  revision: 0a0137d42fd5d6122e56b827c400bafa93b82520
+  revision: 5309c1fbbad50bae29ad5c5e908a3b678ba9f5b9
+  branch: develop
   specs:
     flight_config (0.1.0)
       fakefs
+      fcntl
       tty-config
 
 GEM
   remote: https://rubygems.org/
   specs:
     fakefs (0.19.2)
+    fcntl (1.0.0)
     highline (1.7.10)
     paint (2.1.0)
     tty-config (0.3.1)
