@@ -11,6 +11,7 @@ rsync:
 		--exclude=vendor/ \
 		--exclude='Gemfile.lock'\
 		--exclude='var/'\
+		--exclude='etc/'\
 		--copy-links \
 		--perms \
 		. ${IP}:${REMOTE_DIR}
