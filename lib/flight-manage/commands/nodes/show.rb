@@ -38,8 +38,15 @@ module FlightManage
         def run
           node = @argv[0]
           node ||= Utils.get_host_name
+          state_file = Models::StateFile.new(node)
 
-          data = Models::StateFile.read_or_new(node).__data__.to_h
+          unless File.file?(state_file.path)
+            raise ArgumentError, <<-ERROR.chomp
+No data found for node '#{node}'
+            ERROR
+          end
+
+          data = state_file.data
 
           if data.empty?
             puts "No data found for node '#{node}'"

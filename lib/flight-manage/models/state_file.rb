@@ -26,19 +26,35 @@
 # ==============================================================================
 
 require 'flight-manage/config'
-require 'flight_config'
+
+require 'yaml'
 
 module FlightManage
   module Models
     class StateFile
-      include FlightConfig::Updater
-      include FlightConfig::Globber
-
       attr_reader :node
 
-      #NB: don't bugger with __data__ in here because reasons
       def initialize(node)
         @node = node
+      end
+
+      def data
+        unless File.file?(path)
+          File.open(path, 'w') {}
+        end
+
+        data = nil
+        begin
+          File.open(path) do |f|
+            data = YAML.safe_load(f)
+          end
+        rescue Psych::SyntaxError
+          raise ParseError, <<-ERROR.chomp
+Error parsing yaml in #{location} - aborting
+          ERROR
+        end
+        data = {} unless data
+        data
       end
 
       def path
@@ -46,7 +62,13 @@ module FlightManage
       end
 
       def set_script_values(script_name, values)
-        __data__.set(script_name.to_sym, value: values)
+        new_data = data
+        new_data[script_name] = values
+        save_data(new_data)
+      end
+
+      def save_data(new_data)
+        File.open(path, 'w') { |f| f.write(new_data.to_yaml) }
       end
     end
   end

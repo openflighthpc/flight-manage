@@ -36,15 +36,16 @@ module FlightManage
     module Scripts
       class Resolve < ScriptCommand
         def run
+          state_file = Models::StateFile.new(Utils.get_host_name)
           scripts = find_scripts
-          Models::StateFile.update(Utils.get_host_name) do |sf|
-            scripts.each { |s| resolve(s, sf) }
+          lock_state_file(state_file) do
+            scripts.each { |s| resolve(s, state_file) }
           end
         end
 
         def resolve(script_path, state_file)
           script_name = Utils.get_name_from_script_loc_without_bash(script_path)
-          data = state_file.__data__.to_h
+          data = state_file.data
 
           unless data.dig(script_name, 'status') == 'FAIL'
             puts "#{script_name} has not failed on this node - skipping"
