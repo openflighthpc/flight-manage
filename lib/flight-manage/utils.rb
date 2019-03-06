@@ -38,7 +38,8 @@ module FlightManage
     end
 
     def self.get_name_from_script_location(loc)
-      loc.gsub(/^#{Config.scripts_dir}/,'')
+      loc = loc.gsub(/^#{Config.scripts_dir}/,'')
+      loc.gsub(/^\//,'')
     end
 
     def self.get_name_from_script_loc_without_bash(loc)
