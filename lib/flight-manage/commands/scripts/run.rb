@@ -39,16 +39,15 @@ module FlightManage
     module Scripts
       class Run < ScriptCommand
         def run
-          node = Utils.get_host_name
-          data = Models::StateFile.read_or_new(node).__data__.to_h
+          state_file = Models::StateFile.new(Utils.get_host_name)
           scripts = find_scripts(validate = true)
           scripts.each do |script|
-            error_if_re_run(script, data)
+            error_if_re_run(script, state_file.data)
           end
-          Models::StateFile.create_or_update(node) do |sf|
+          lock_state_file(state_file) do
             scripts.each do |script|
               exec_values = execute(script)
-              output_execution_data(exec_values, script, sf)
+              output_execution_data(exec_values, script, state_file)
             end
           end
         end

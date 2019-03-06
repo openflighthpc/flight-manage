@@ -27,6 +27,8 @@
 
 require 'flight-manage/command'
 
+require 'lockfile'
+
 module FlightManage
   module Commands
     module Scripts
@@ -41,6 +43,18 @@ Please provide either a script, a role, or a stage
             return [script_loc]
           else
             return find_scripts_with_role_and_stage
+          end
+        end
+
+        def lock_state_file(state_file)
+          begin
+            Lockfile.new("#{state_file.path}.lock", retries: 0) do
+              yield
+            end
+          rescue Lockfile::MaxTriesLockError
+            raise FileSysError, <<-ERROR.chomp
+The file for node #{state_file.node} is locked - aborting
+            ERROR
           end
         end
 

@@ -35,11 +35,14 @@ module FlightManage
         def run
           script_name = Utils.remove_bash_ext(@argv[0])
 
-          state_files = Models::StateFile.glob_read('*')
+          dir = Dir[File.join(Config.data_dir, "/*")]
+          state_files = dir.map do |p|
+            Models::StateFile.new(File.basename(p, File.extname(p)))
+          end
 
           data = {}
           state_files.each do |sf|
-            data[sf.node] = sf.__data__.to_h
+            data[sf.node] = sf.data
           end
           out = ''
           data.each do |node, data_hash|
