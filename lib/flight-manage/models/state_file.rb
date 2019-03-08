@@ -39,9 +39,8 @@ module FlightManage
       end
 
       def data
-        unless File.file?(path)
-          File.open(path, 'w') {}
-        end
+        # create file if it doesn't exist
+        File.open(path, 'w') {} unless File.file?(path)
 
         data = nil
         begin
@@ -53,7 +52,7 @@ module FlightManage
 Error parsing yaml in #{location} - aborting
           ERROR
         end
-        data = {} unless data
+        data ||= {}
         data
       end
 
