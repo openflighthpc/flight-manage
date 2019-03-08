@@ -52,15 +52,13 @@ Please provide either a script, a role, or a stage
 
         # Use lockfile library to prevent simultaneous access
         def lock_state_file(state_file)
-          begin
-            Lockfile.new("#{state_file.path}.lock", retries: 0) do
-              yield
-            end
-          rescue Lockfile::MaxTriesLockError
-            raise FileSysError, <<-ERROR.chomp
-The file for node #{state_file.node} is locked - aborting
-            ERROR
+          Lockfile.new("#{state_file.path}.lock", retries: 0) do
+            yield
           end
+        rescue Lockfile::MaxTriesLockError
+          raise FileSysError, <<-ERROR.chomp
+The file for node #{state_file.node} is locked - aborting
+          ERROR
         end
 
         # get a script path from its name
