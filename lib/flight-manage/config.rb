@@ -55,9 +55,26 @@ module FlightManage
              else
                {}
              end
-      @data_dir = conf['data_dir'] || '/opt/service/flight/managedata/'
-      @scripts_dir = conf['scripts_dir'] || '/opt/service/scripts/'
-      @log_file = conf['log_file'] || File.join(@root_dir, 'var/log/manage.log')
+      @data_dir = get_path_from_conf(conf, 'data_dir')
+      @data_dir ||= '/opt/service/flight/managedata/'
+
+      @scripts_dir = get_path_from_conf(conf, 'scripts_dir')
+      @scripts_dir ||= '/opt/service/scripts/'
+
+      @log_file = get_path_from_conf(conf, 'log_file')
+      @log_file ||= File.join(@root_dir, 'var/log/manage.log')
+    end
+
+    def get_path_from_conf(conf, key)
+      unless conf.key?(key)
+        return nil
+      end
+      # check if absolute path
+      if conf[key].start_with?('/')
+        return conf[key]
+      else
+        return File.join(@root_dir, conf[key])
+      end
     end
   end
 end
