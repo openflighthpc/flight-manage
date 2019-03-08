@@ -37,6 +37,7 @@ require 'open3'
 module FlightManage
   module Commands
     module Scripts
+      # Class of the script run command, executes a script
       class Run < ScriptCommand
         def run
           state_file = Models::StateFile.new(Utils.get_host_name)
@@ -52,6 +53,7 @@ module FlightManage
           end
         end
 
+        # Checks if a script is valid to be ran
         def error_if_re_run(script_loc, data)
           script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
 
@@ -70,6 +72,7 @@ Script #{script_name} cannot be re-ran or has failed on this node
           end
         end
 
+        # execute a script
         def execute(script_loc)
           exec_values = nil
           # use this block syntax to temporarily change the working dir
@@ -89,6 +92,7 @@ Script #{script_name} cannot be re-ran or has failed on this node
           return exec_values
         end
 
+        # print output, log & update the node's statefile
         def output_execution_data(exec_values, script_loc, sf)
           script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
           exit_code = exec_values['exit_code']

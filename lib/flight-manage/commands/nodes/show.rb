@@ -34,6 +34,7 @@ require 'flight-manage/utils'
 module FlightManage
   module Commands
     module Nodes
+      # Class of the show node command, displays execution on a node
       class Show < Command
         def run
           node = @argv[0]

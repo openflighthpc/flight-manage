@@ -26,6 +26,7 @@
 # ==============================================================================
 
 module FlightManage
+  # Contains configuration logic based on etc/manage.conf config file
   class Config
     class << self
       def instance

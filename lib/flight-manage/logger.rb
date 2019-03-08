@@ -28,6 +28,7 @@
 require 'flight-manage/config'
 
 module FlightManage
+  # Class that handles the log file
   class Logger
     def initialize
       FileUtils.mkdir_p(File.dirname(Config.log_file))

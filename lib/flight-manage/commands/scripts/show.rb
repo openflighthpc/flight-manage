@@ -31,6 +31,7 @@ require 'flight-manage/utils'
 module FlightManage
   module Commands
     module Scripts
+      # Class of the script show command, displays execution of a script
       class Show < ScriptCommand
         def run
           script_name = Utils.remove_bash_ext(@argv[0])
