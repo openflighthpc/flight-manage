@@ -34,10 +34,10 @@ yum install https://s3-eu-west-1.amazonaws.com/alces-flight/rpms/flight-core-0.1
 
 ```
 # Standard install
-curl https://raw.githubusercontent.com/openflighthpc/flight-manage/master/scripts/install |/bin/bash
+curl https://raw.githubusercontent.com/openflighthpc/flight-manage/dev/flight-core-install/scripts/install |/bin/bash
 
 # Installation with variables
-curl https://raw.githubusercontent.com/openflighthpc/flight-manage/master/scripts/install |alces_INSTALL_DIR=/my/install/path/ alces_VERSION=dev-release /bin/bash
+curl https://raw.githubusercontent.com/openflighthpc/flight-manage/dev/flight-core-install/scripts/install |alces_INSTALL_DIR=/my/install/path/ alces_VERSION=dev-release /bin/bash
 ```
 
 ### Local Installation
