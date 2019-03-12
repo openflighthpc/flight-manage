@@ -34,6 +34,7 @@ require 'pathname'
 module FlightManage
   module Commands
     module Scripts
+      # Class of the script list command, displays all availible scripts
       class List < Command
         def run
           # maybe list non flight scripts with an 'X'

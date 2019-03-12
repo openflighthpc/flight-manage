@@ -28,6 +28,7 @@
 require 'ostruct'
 
 module FlightManage
+  # top level super class for all commands
   class Command
     def initialize(argv, options)
       @argv = argv.freeze

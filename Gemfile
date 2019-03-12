@@ -2,6 +2,6 @@
 
 source 'https://rubygems.org'
 
-gem 'commander', github: 'alces-software/commander', :tag => '4.4.4.alces3'
+gem 'commander', github: 'alces-software/commander', tag: '4.4.4.alces3'
 gem 'lockfile'
 gem 'paint'

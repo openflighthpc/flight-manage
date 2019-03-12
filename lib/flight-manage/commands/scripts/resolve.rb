@@ -34,6 +34,8 @@ require 'date'
 module FlightManage
   module Commands
     module Scripts
+      # Class of the script resolve command
+      # Marks a script as executed successfully elsewhere
       class Resolve < ScriptCommand
         def run
           state_file = Models::StateFile.new(Utils.get_host_name)

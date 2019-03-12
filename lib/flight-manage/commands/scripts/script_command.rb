@@ -32,7 +32,11 @@ require 'lockfile'
 module FlightManage
   module Commands
     module Scripts
+      # Super class containing script selection methods
       class ScriptCommand < Command
+        # Locate scripts from argv and stage & role options
+        # Can be used on scripts without these options as they'll
+        # evaluate to nil
         def find_scripts(validate = false)
           if not @options.stage and not @options.role and not @argv[0]
             raise ArgumentError, <<-ERROR.chomp
@@ -46,18 +50,19 @@ Please provide either a script, a role, or a stage
           end
         end
 
+        # Use lockfile library to prevent simultaneous access
         def lock_state_file(state_file)
-          begin
-            Lockfile.new("#{state_file.path}.lock", retries: 0) do
-              yield
-            end
-          rescue Lockfile::MaxTriesLockError
-            raise FileSysError, <<-ERROR.chomp
-The file for node #{state_file.node} is locked - aborting
-            ERROR
+          Lockfile.new("#{state_file.path}.lock", retries: 0) do
+            yield
           end
+        rescue Lockfile::MaxTriesLockError
+          raise FileSysError, <<-ERROR.chomp
+The file for node #{state_file.node} is locked - aborting
+          ERROR
         end
 
+        # get a script path from its name
+        # if validate - check it's a script that exists
         def find_script_from_arg(arg, validate = false)
           script_arg = Utils.remove_bash_ext(arg)
           script_loc = File.join(Config.scripts_dir, "#{script_arg}.bash")
@@ -65,6 +70,7 @@ The file for node #{state_file.node} is locked - aborting
           return script_loc
         end
 
+        # check a script exists & is a flight script
         def validate_script(script_loc)
           unless File.file?(script_loc) and File.readable?(script_loc)
             raise ArgumentError, <<-ERROR.chomp
@@ -78,6 +84,7 @@ Script at #{File.expand_path(script_loc)} is not a flight script
           end
         end
 
+        # resolve role & stage options to find scripts
         def find_scripts_with_role_and_stage
           matches = []
           Utils.find_all_flight_scripts.each do |key, val|
@@ -91,6 +98,7 @@ Script at #{File.expand_path(script_loc)} is not a flight script
           return matches
         end
 
+        # print error if no scripts are found
         def error_from_role_and_stage
           role_str = @options.role ? "role '#{@options.role}'" : "no role"
           stage_str = @options.stage ? "stage '#{@options.stage}'" : "no stage"

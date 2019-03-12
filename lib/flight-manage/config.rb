@@ -26,18 +26,16 @@
 # ==============================================================================
 
 module FlightManage
+  # Contains configuration logic based on etc/manage.conf config file
   class Config
     class << self
       def instance
         @instance ||= Config.new
       end
 
-      def method_missing(s, *a, &b)
-        if instance.respond_to?(s)
-          instance.send(s)
-        else
-          raise
-        end
+      def method_missing(s, *_a, &_b)
+        raise unless instance.respond_to?(s)
+        instance.send(s)
       end
 
       def respond_to_missing?(s)
@@ -51,7 +49,7 @@ module FlightManage
       @root_dir = File.expand_path(File.join(File.dirname(__FILE__), '../..'))
       @conf_file = File.join(@root_dir, 'etc/manage.conf')
       conf = if File.readable?(@conf_file)
-               File.open(@conf_file) { |f| data = YAML.safe_load(f) }
+               File.open(@conf_file) { |f| YAML.safe_load(f) }
              else
                {}
              end
