@@ -77,7 +77,7 @@ Script #{script_name} cannot be re-ran or has failed on this node
           exec_values = nil
           # use this block syntax to temporarily change the working dir
           Dir.chdir(File.dirname(script_loc)) do
-          # need to switch to popen3 if we want to manipulate the thread
+            # need to switch to popen3 if we want to manipulate the thread
             stdout, stderr, process_status = Open3.capture3("bash #{script_loc}")
             exit_code = process_status.exitstatus
             status = exit_code == 0 ? "OK" : "FAIL"
