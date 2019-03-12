@@ -64,7 +64,7 @@ module FlightManage
     end
 
     def get_path_from_conf(conf, key)
-      unless conf.key?(key)
+      unless conf.respond_to?(:key?) and conf.key?(key)
         return nil
       end
       # check if absolute path
