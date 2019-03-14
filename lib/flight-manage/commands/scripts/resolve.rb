@@ -45,18 +45,17 @@ module FlightManage
           end
         end
 
-        def resolve(script_path, state_file)
-          script_name = Utils.get_name_from_script_loc_without_bash(script_path)
+        def resolve(script, state_file)
           data = state_file.data
 
-          unless data.dig(script_name, 'status') == 'FAIL'
-            puts "#{script_name} has not failed on this node - skipping"
+          unless data.dig(script.name, 'status') == 'FAIL'
+            puts "#{script.name} has not failed on this node - skipping"
           else
-            script_data = data[script_name]
+            script_data = data[script.name]
             script_data['status'] = 'RESOLVED'
-            state_file.set_script_values(script_name, script_data)
-            log(state_file.node, script_name)
-            puts "#{script_name} has been marked as resolved"
+            state_file.set_script_values(script.name, script_data)
+            log(state_file.node, script.name)
+            puts "#{script.name} has been marked as resolved"
           end
         end
 

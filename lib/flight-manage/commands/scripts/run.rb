@@ -54,31 +54,28 @@ module FlightManage
         end
 
         # Checks if a script is valid to be ran
-        def error_if_re_run(script_loc, data)
-          script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
+        def error_if_re_run(script, data)
 
-          flight_vars = Utils.find_flight_vars(script_loc)
-          rerunable = (flight_vars['rerunable'] == 'true')
-          rerunable ||= (flight_vars['rerunnable'] == 'true')
+          rerunable = (script.rerunnable == 'true')
           # don't allow re-running of failed scripts
-          rerunable = false if data.dig(script_name, 'status') == 'FAIL'
+          rerunable = false if data.dig(script.name, 'status') == 'FAIL'
 
-          been_run = data.key?(script_name)
+          been_run = data.key?(script.name)
 
           if not rerunable and been_run
             raise ManageError, <<-ERROR.chomp
-Script #{script_name} cannot be re-ran or has failed on this node
+Script #{script.name} cannot be re-ran or has failed on this node
             ERROR
           end
         end
 
         # execute a script
-        def execute(script_loc)
+        def execute(script)
           exec_values = nil
           # use this block syntax to temporarily change the working dir
-          Dir.chdir(File.dirname(script_loc)) do
+          Dir.chdir(File.dirname(script.path)) do
             # need to switch to popen3 if we want to manipulate the thread
-            stdout, stderr, process_status = Open3.capture3("bash #{script_loc}")
+            stdout, stderr, process_status = Open3.capture3("bash #{script.path}")
             exit_code = process_status.exitstatus
             status = exit_code == 0 ? "OK" : "FAIL"
             exec_values = {
@@ -93,15 +90,15 @@ Script #{script_name} cannot be re-ran or has failed on this node
         end
 
         # print output, log & update the node's statefile
-        def output_execution_data(exec_values, script_loc, sf)
-          script_name = Utils.get_name_from_script_loc_without_bash(script_loc)
+        def output_execution_data(exec_values, script, sf)
+          #TODO include dir in log??
           exit_code = exec_values['exit_code']
 
           # maybe order the script names in the yaml
-          sf.set_script_values(script_name, exec_values)
+          sf.set_script_values(script.name, exec_values)
 
-          log(script_name, sf.node, exit_code, exec_values['time'])
-          puts "#{script_name} executed with exit code #{exit_code}"
+          log(script.name, sf.node, exit_code, exec_values['time'])
+          puts "#{script.name} executed with exit code #{exit_code}"
         end
 
         def log(script_name, node, exit_code, time)

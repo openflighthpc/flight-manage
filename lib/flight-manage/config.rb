@@ -25,6 +25,8 @@
 # https://github.com/openflighthpc/flight-manage
 # ==============================================================================
 
+require 'flight-manage/utils'
+
 module FlightManage
   # Contains configuration logic based on etc/manage.conf config file
   class Config
@@ -43,7 +45,7 @@ module FlightManage
       end
     end
 
-    attr_reader :data_dir, :scripts_dir, :log_file
+    attr_reader :root_dir, :data_dir, :script_dirs, :log_file
 
     def initialize
       @root_dir = File.expand_path(File.join(File.dirname(__FILE__), '../..'))
@@ -53,22 +55,27 @@ module FlightManage
              else
                {}
              end
-      @data_dir = get_path_from_conf(conf, 'data_dir')
+      @data_dir = get_val_from_conf(conf, 'data_dir')
       @data_dir ||= '/opt/service/flight/managedata/'
 
-      @scripts_dir = get_path_from_conf(conf, 'scripts_dir')
-      @scripts_dir ||= '/opt/service/scripts/'
+      @script_dirs = get_val_from_conf(conf, 'script_dirs')
+      @script_dirs ||= ['/opt/service/scripts']
+      @script_dirs.map! { |p| p.gsub('{nodename}', Utils.get_host_name) }
 
-      @log_file = get_path_from_conf(conf, 'log_file')
+      @log_file = get_val_from_conf(conf, 'log_file')
       @log_file ||= File.join(@root_dir, 'var/log/manage.log')
     end
 
-    def get_path_from_conf(conf, key)
+    def get_val_from_conf(conf, key)
       unless conf.respond_to?(:key?) and conf.key?(key)
         return nil
       end
       # check if absolute path
-      if conf[key].start_with?('/')
+      if conf[key].is_a?(Array)
+        return conf[key]
+      elsif not conf[key].is_a?(String)
+        return nil
+      elsif conf[key].start_with?('/')
         return conf[key]
       else
         return File.join(@root_dir, conf[key])
