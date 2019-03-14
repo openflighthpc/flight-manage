@@ -104,6 +104,13 @@ module FlightManage
       c.configure_sub_command(self)
     end
 
+    command :'script import' do |c|
+      cli_syntax(c, 'SOURCE DESTINATION PLATFORM')
+      c.description = 'Import scripts from an openflightHPC Architect .zip'
+      c.hidden = true
+      action(c, Commands::Scripts::Import)
+    end
+
     command :'script list' do |c|
       cli_syntax(c)
       c.description = 'List available scripts'
