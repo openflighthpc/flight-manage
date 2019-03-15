@@ -28,6 +28,7 @@
 module FlightManage
   ManageError = Class.new(RuntimeError)
 
-  FileSysError = Class.new(ManageError)
   ArgumentError = Class.new(ManageError)
+  ConfigError = Class.new(ManageError)
+  FileSysError = Class.new(ManageError)
 end

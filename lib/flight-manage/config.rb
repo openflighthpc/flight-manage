@@ -25,6 +25,7 @@
 # https://github.com/openflighthpc/flight-manage
 # ==============================================================================
 
+require 'flight-manage/exceptions'
 require 'flight-manage/utils'
 
 module FlightManage
@@ -61,6 +62,16 @@ module FlightManage
       @script_dirs = get_val_from_conf(conf, 'script_dirs')
       @script_dirs ||= ['/opt/service/scripts']
       @script_dirs.map! { |p| p.gsub('{nodename}', Utils.get_host_name) }
+      #check if any script directories are nested
+      @script_dirs.each do |dir1|
+        @script_dirs.each do |dir2|
+          if dir1 =~ /^#{dir2}.*\//
+            raise ConfigError, <<-ERROR.chomp
+Error in config file: Nested script directories #{dir1} and #{dir2} not valid
+            ERROR
+          end
+        end
+      end
 
       @log_file = get_val_from_conf(conf, 'log_file')
       @log_file ||= File.join(@root_dir, 'var/log/manage.log')
