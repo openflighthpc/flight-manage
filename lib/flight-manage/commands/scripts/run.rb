@@ -97,12 +97,12 @@ Script #{script.name} cannot be re-ran or has failed on this node
           # maybe order the script names in the yaml
           sf.set_script_values(script.name, exec_values)
 
-          log(script.name, sf.node, exit_code, exec_values['time'])
+          log(script, sf.node, exit_code, exec_values['time'])
           puts "#{script.name} executed with exit code #{exit_code}"
         end
 
-        def log(script_name, node, exit_code, time)
-          Logger.new.log(time, node, "#{script_name}: #{exit_code}")
+        def log(script, node, exit_code, time)
+          Logger.new.log(time, node, script.dir, "#{script.name}: #{exit_code}")
         end
       end
     end

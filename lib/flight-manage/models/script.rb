@@ -31,7 +31,7 @@ require 'flight-manage/exceptions'
 module FlightManage
   module Models
     class Script
-      attr_reader :name, :path
+      attr_reader :name, :dir, :path
 
       class << self
         def glob_all_scripts

@@ -54,14 +54,14 @@ module FlightManage
             script_data = data[script.name]
             script_data['status'] = 'RESOLVED'
             state_file.set_script_values(script.name, script_data)
-            log(state_file.node, script.name)
+            log(state_file.node, script)
             puts "#{script.name} has been marked as resolved"
           end
         end
 
-        def log(node, script_name)
+        def log(node, script)
           time = DateTime.now.to_s
-          Logger.new.log(time, node, script_name, 'Resolved')
+          Logger.new.log(time, node, script.dir, script.name, 'Resolved')
         end
       end
     end
