@@ -45,7 +45,7 @@ module FlightManage
           scripts.each do |script|
             error_if_re_run(script, state_file.data)
           end
-          lock_state_file(state_file) do
+          Utils.lock_state_file(state_file) do
             scripts.each do |script|
               exec_values = execute(script)
               output_execution_data(exec_values, script, state_file)

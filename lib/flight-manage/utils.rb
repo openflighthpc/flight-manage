@@ -32,5 +32,16 @@ module FlightManage
     def self.get_host_name
       Socket.gethostname.split('.')[0]
     end
+
+    # Use lockfile library to prevent simultaneous access
+    def self.lock_state_file(state_file)
+      Lockfile.new("#{state_file.path}.lock", retries: 0) do
+        yield
+      end
+    rescue Lockfile::MaxTriesLockError
+      raise FileSysError, <<-ERROR.chomp
+The file for node #{state_file.node} is locked - aborting
+      ERROR
+    end
   end
 end

@@ -40,7 +40,7 @@ module FlightManage
         def run
           state_file = Models::StateFile.new(Utils.get_host_name)
           scripts = find_scripts
-          lock_state_file(state_file) do
+          Utils.lock_state_file(state_file) do
             scripts.each { |s| resolve(s, state_file) }
           end
         end
