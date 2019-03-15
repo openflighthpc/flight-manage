@@ -78,9 +78,11 @@ module FlightManage
 
       def add_role_and_stage_options(command)
         command.option '-r', '--role ROLE',
-          'Run all scripts with ROLE (and no STAGE unless --stage is passed)'
+          'Select all scripts with ROLE (and no STAGE unless --stage is passed)'
         command.option '-s', '--stage STAGE',
-          'Run all scripts with STAGE (and no ROLE unless --role is passed)'
+          'Select all scripts with STAGE (and no ROLE unless --role is passed)'
+        command.option '-c', '--chain CHAIN',
+          'Select all the scripts in the specified file'
       end
     end
 
