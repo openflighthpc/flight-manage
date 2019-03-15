@@ -40,29 +40,28 @@ module FlightManage
         def run
           state_file = Models::StateFile.new(Utils.get_host_name)
           scripts = find_scripts
-          lock_state_file(state_file) do
+          Utils.lock_state_file(state_file) do
             scripts.each { |s| resolve(s, state_file) }
           end
         end
 
-        def resolve(script_path, state_file)
-          script_name = Utils.get_name_from_script_loc_without_bash(script_path)
+        def resolve(script, state_file)
           data = state_file.data
 
-          unless data.dig(script_name, 'status') == 'FAIL'
-            puts "#{script_name} has not failed on this node - skipping"
+          unless data.dig(script.name, 'status') == 'FAIL'
+            puts "#{script.name} has not failed on this node - skipping"
           else
-            script_data = data[script_name]
+            script_data = data[script.name]
             script_data['status'] = 'RESOLVED'
-            state_file.set_script_values(script_name, script_data)
-            log(state_file.node, script_name)
-            puts "#{script_name} has been marked as resolved"
+            state_file.set_script_values(script.name, script_data)
+            log(state_file.node, script)
+            puts "#{script.name} has been marked as resolved"
           end
         end
 
-        def log(node, script_name)
+        def log(node, script)
           time = DateTime.now.to_s
-          Logger.new.log(time, node, script_name, 'Resolved')
+          Logger.new.log(time, node, script.dir, script.name, 'Resolved')
         end
       end
     end

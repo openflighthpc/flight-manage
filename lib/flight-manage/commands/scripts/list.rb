@@ -27,6 +27,7 @@
 
 require 'flight-manage/command'
 require 'flight-manage/config'
+require 'flight-manage/models/script'
 require 'flight-manage/utils'
 
 require 'pathname'
@@ -38,11 +39,14 @@ module FlightManage
       class List < Command
         def run
           # maybe list non flight scripts with an 'X'
-          puts "Listing all flight scripts found in '#{Config.scripts_dir}':"
-          Utils.find_all_flight_scripts.each do |script, vars|
-            str = script.dup
-            str << " - #{vars['description']}" if vars.key?('description')
-            puts str
+          Config.script_dirs.each do |dir|
+            puts ''
+            puts "Listing all flight scripts in '#{dir}':"
+            Models::Script.glob_scripts(dir).each do |script|
+              str = script.name
+              str << " - #{script.description}" if script.description
+              puts str
+            end
           end
         end
       end

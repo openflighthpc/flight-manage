@@ -26,6 +26,7 @@
 # ==============================================================================
 
 require 'flight-manage/command'
+require 'flight-manage/models/script'
 
 require 'lockfile'
 
@@ -35,7 +36,7 @@ module FlightManage
       # Super class containing script selection methods
       class ScriptCommand < Command
         # Locate scripts from argv and stage & role options
-        # Can be used on scripts without these options as they'll
+        # Can be used in commands without these options as they'll
         # evaluate to nil
         def find_scripts(validate = false)
           if not @options.stage and not @options.role and not @argv[0]
@@ -43,55 +44,22 @@ module FlightManage
 Please provide either a script, a role, or a stage
             ERROR
           elsif not @options.stage and not @options.role
-            script_loc = find_script_from_arg(@argv[0], validate)
-            return [script_loc]
+            script = Models::Script.new({'name' => @argv[0]})
+            script.validate if validate
+            return [script]
           else
             return find_scripts_with_role_and_stage
-          end
-        end
-
-        # Use lockfile library to prevent simultaneous access
-        def lock_state_file(state_file)
-          Lockfile.new("#{state_file.path}.lock", retries: 0) do
-            yield
-          end
-        rescue Lockfile::MaxTriesLockError
-          raise FileSysError, <<-ERROR.chomp
-The file for node #{state_file.node} is locked - aborting
-          ERROR
-        end
-
-        # get a script path from its name
-        # if validate - check it's a script that exists
-        def find_script_from_arg(arg, validate = false)
-          script_arg = Utils.remove_bash_ext(arg)
-          script_loc = File.join(Config.scripts_dir, "#{script_arg}.bash")
-          validate_script(script_loc) if validate
-          return script_loc
-        end
-
-        # check a script exists & is a flight script
-        def validate_script(script_loc)
-          unless File.file?(script_loc) and File.readable?(script_loc)
-            raise ArgumentError, <<-ERROR.chomp
-Script at #{File.expand_path(script_loc)} is not reachable
-            ERROR
-          end
-          unless Utils.is_flight_script?(script_loc)
-            raise ArgumentError, <<-ERROR.chomp
-Script at #{File.expand_path(script_loc)} is not a flight script
-            ERROR
           end
         end
 
         # resolve role & stage options to find scripts
         def find_scripts_with_role_and_stage
           matches = []
-          Utils.find_all_flight_scripts.each do |key, val|
-            stages = val['stages'].nil? ? [nil] : val['stages'].split(',')
-            roles = val['roles'].nil? ? [nil] : val['roles'].split(',')
-            if stages.include?(@options.stage) and roles.include?(@options.role)
-              matches << File.join(Config.scripts_dir, key)
+          Models::Script.glob_all_scripts.each do |script|
+            if script.stages.include?(@options.stage)
+              if script.roles.include?(@options.role)
+                matches << script
+              end
             end
           end
           error_from_role_and_stage if matches.empty?

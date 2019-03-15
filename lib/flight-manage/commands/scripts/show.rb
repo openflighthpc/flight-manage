@@ -25,6 +25,7 @@
 # https://github.com/openflighthpc/flight-manage
 # ==============================================================================
 
+require 'flight-manage/models/script'
 require 'flight-manage/models/state_file'
 require 'flight-manage/utils'
 
@@ -34,7 +35,7 @@ module FlightManage
       # Class of the script show command, displays execution of a script
       class Show < ScriptCommand
         def run
-          script_name = Utils.remove_bash_ext(@argv[0])
+          script = Models::Script.new({'name' => @argv[0]})
 
           dir = Dir[File.join(Config.data_dir, "/*")]
           state_files = dir.map do |p|
@@ -47,15 +48,15 @@ module FlightManage
           end
           out = ''
           data.each do |node, data_hash|
-            if data_hash.key?(script_name)
-              out << "#{node}: #{data_hash[script_name]['status']}\n"
+            if data_hash.key?(script.name)
+              out << "#{node}: #{data_hash[script.name]['status']}\n"
             end
           end
 
           if out.empty?
-            puts "No execution data found for #{script_name}"
+            puts "No execution data found for #{script.name}"
           else
-            puts "Showing current state of script: #{script_name}\n\n"
+            puts "Showing current state of script: #{script.path}\n\n"
             puts out
           end
         end
