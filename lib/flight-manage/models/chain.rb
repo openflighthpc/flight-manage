@@ -45,7 +45,7 @@ No chain file founnd at #{path}
         data = Utils.read_yaml(@path)
         unless data.is_a?(Array)
           raise ManageError, <<-ERROR.chomp
-Invalid chain at #{@path} - not a hyphenated list
+Invalid chain at #{@path} - not a yaml list
           ERROR
         end
         return data

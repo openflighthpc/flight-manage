@@ -48,7 +48,7 @@ module FlightManage
           return matches
         end
 
-        #TODO check whether to remove this error
+        #TODO check whether to remove this error for when running a chain
         # print error if no scripts are found
         def error_from_role_and_stage(role, stage)
           role_str = role ? "role '#{role}'" : "no role"
