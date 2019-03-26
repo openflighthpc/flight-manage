@@ -26,6 +26,7 @@
 # ==============================================================================
 
 require 'socket'
+require 'yaml'
 
 module FlightManage
   module Utils
@@ -42,6 +43,21 @@ module FlightManage
       raise FileSysError, <<-ERROR.chomp
 The file for node #{state_file.node} is locked - aborting
       ERROR
+    end
+
+    def self.read_yaml(path)
+      data = nil
+      begin
+        File.open(path) do |f|
+          data = YAML.safe_load(f)
+        end
+      rescue Psych::SyntaxError
+        raise ManageError, <<-ERROR.chomp
+Error parsing yaml in #{path} - aborting
+        ERROR
+      end
+      data ||= {}
+      data
     end
   end
 end

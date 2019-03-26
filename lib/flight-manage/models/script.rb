@@ -34,6 +34,30 @@ module FlightManage
       attr_reader :name, :dir, :path
 
       class << self
+        # resolve role & stage options to find scripts
+        def find_scripts_with_role_and_stage(role, stage)
+          matches = []
+          glob_all_scripts.each do |script|
+            if script.stages.include?(stage)
+              if script.roles.include?(role)
+                matches << script
+              end
+            end
+          end
+          error_from_role_and_stage(role, stage) if matches.empty?
+          return matches
+        end
+
+        #TODO check whether to remove this error for when running a chain
+        # print error if no scripts are found
+        def error_from_role_and_stage(role, stage)
+          role_str = role ? "role '#{role}'" : "no role"
+          stage_str = stage ? "stage '#{stage}'" : "no stage"
+          raise ArgumentError, <<-ERROR.chomp
+No scripts found with #{role_str} and #{stage_str}
+          ERROR
+        end
+
         def glob_all_scripts
           # will be ordered first by script directory (as defined in the config)
           # then by the order defined below in `sort_scripts`

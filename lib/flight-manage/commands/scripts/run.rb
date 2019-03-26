@@ -91,7 +91,6 @@ Script #{script.name} cannot be re-ran or has failed on this node
 
         # print output, log & update the node's statefile
         def output_execution_data(exec_values, script, sf)
-          #TODO include dir in log??
           exit_code = exec_values['exit_code']
 
           # maybe order the script names in the yaml

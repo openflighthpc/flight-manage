@@ -26,8 +26,7 @@
 # ==============================================================================
 
 require 'flight-manage/config'
-
-require 'yaml'
+require 'flight-manage/utils'
 
 module FlightManage
   module Models
@@ -41,19 +40,7 @@ module FlightManage
       def data
         # create file if it doesn't exist
         File.open(path, 'w') {} unless File.file?(path)
-
-        data = nil
-        begin
-          File.open(path) do |f|
-            data = YAML.safe_load(f)
-          end
-        rescue Psych::SyntaxError
-          raise ParseError, <<-ERROR.chomp
-Error parsing yaml in #{location} - aborting
-          ERROR
-        end
-        data ||= {}
-        data
+        Utils.read_yaml(path)
       end
 
       def path
