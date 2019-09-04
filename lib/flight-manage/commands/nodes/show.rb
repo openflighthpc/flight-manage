@@ -67,7 +67,7 @@ No data found for node '#{node}'
         end
 
         def print_stderr(vals)
-          puts "stderr:\n  #{vals['stdout']}"
+          puts "stderr:\n  #{vals['stderr']}"
         end
 
         def print_verbose(vals)
