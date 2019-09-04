@@ -38,6 +38,7 @@ module FlightManage
       class Show < Command
         def run
           node = @argv[0]
+          verbose = @options['verbose']
           node ||= Utils.get_host_name
           state_file = Models::StateFile.new(node)
 
@@ -55,6 +56,10 @@ No data found for node '#{node}'
             puts "Showing current state of hostname: #{node}\n\n"
             data.each do |key, vals|
               puts "#{key}: #{vals['status']}"
+              if verbose
+                puts "stdout:\n  #{vals['stdout']}"
+                puts "stderr:\n  #{vals['stderr']}"
+              end
             end
           end
         end
