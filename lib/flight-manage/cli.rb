@@ -88,7 +88,7 @@ module FlightManage
       def output_verbosity(command)
         command.option '-v', '--verbose',
           'Print stderr and stdout of a script'
-        command.option '-e', '--error'
+        command.option '-e', '--error',
           'Print just stderr'
       end
     end
