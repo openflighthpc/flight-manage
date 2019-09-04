@@ -39,6 +39,7 @@ module FlightManage
         def run
           node = @argv[0]
           verbose = @options['verbose']
+          errors = @options['error']
           node ||= Utils.get_host_name
           state_file = Models::StateFile.new(node)
 
@@ -57,11 +58,21 @@ No data found for node '#{node}'
             data.each do |key, vals|
               puts "#{key}: #{vals['status']}"
               if verbose
-                puts "stdout:\n  #{vals['stdout']}"
-                puts "stderr:\n  #{vals['stderr']}"
+                print_verbose(vals)
+              elsif errors
+                print_stderr(vals)
               end
             end
           end
+        end
+
+        def print_stderr(vals)
+          puts "stderr:\n  #{vals['stdout']}"
+        end
+
+        def print_verbose(vals)
+          puts "stdout:\n  #{vals['stdout']}"
+          print_stderr(vals)
         end
       end
     end

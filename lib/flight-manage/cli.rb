@@ -85,9 +85,11 @@ module FlightManage
           'Select all the scripts in the specified file'
       end
 
-      def print_verbosely(command)
+      def output_verbosity(command)
         command.option '-v', '--verbose',
           'Print stderr and stdout of a script'
+        command.option '-e', '--error'
+          'Print just stderr'
       end
     end
 
@@ -101,7 +103,7 @@ module FlightManage
       cli_syntax(c, '[NODE]')
       c.description = 'Show history of execution on a node'\
                       ' (defaults to this node)'
-      print_verbosely(c)
+      output_verbosity(c)
       c.hidden = true      
       action(c, Commands::Nodes::Show)
     end
