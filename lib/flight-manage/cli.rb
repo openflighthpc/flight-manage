@@ -153,8 +153,7 @@ module FlightManage
 
     command :report do |c|
       cli_syntax(c)
-      c.description = 'Show table report current status of all nodes with all scripts on them'
-      c.hidden = true
+      c.description = 'Show table report of node status for all scripts'
       action(c, Commands::Report::Show)
     end
   end
