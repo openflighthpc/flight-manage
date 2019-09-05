@@ -39,15 +39,12 @@ module FlightManage
         def run
           # get names of all nodes
           names = get_names
-          # puts names
 
           # create list of StateFile objects
           nodes = load_nodes(names)
-          # puts nodes
 
           # get names of all scripts
           scripts = get_scripts(nodes)
-          # puts scripts
 
           # output table
           table = print_table(names,nodes,scripts)
@@ -68,8 +65,12 @@ module FlightManage
 
         def get_scripts(nodes)
           scripts = Array.new
-          nodes.each { |node| scripts.push(node.data.keys)}
-          scripts.flatten.uniq
+          Config.script_dirs.each do |dir|
+            Models::Script.glob_scripts(dir).each do |script|
+              scripts.push(script.name)
+            end
+          end
+          scripts
         end
 
         def print_table(names,nodes,scripts)
