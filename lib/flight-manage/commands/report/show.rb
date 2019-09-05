@@ -76,22 +76,19 @@ module FlightManage
 
         def print_table(names,nodes,scripts)
           table = Terminal::Table.new do |t|
-            t.headings = ['Node'].concat scripts
-            rows = Array.new
+            t.headings = ['Node','Script','Status']
             (0..names.length-1).each do |i|
-              rows.push([names[i]])
+              t.add_row [names[i],'','']
+              rows = Array.new
               (0..scripts.length-1).each do |j|
                 if nodes[i].data[scripts[j]] == nil
                   scriptval = "N/A"
                 else
                   scriptval = nodes[i].data[scripts[j]]["status"]
                 end
-                rows[i].push(scriptval)
+                rows.push(['',scripts[j],scriptval])
               end
-            end
-            rows = rows.sort
-            rows.each do |r|
-              t.add_row r
+              rows.each { |row| t.add_row row}
             end
           end
           table
