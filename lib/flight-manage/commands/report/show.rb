@@ -50,7 +50,8 @@ module FlightManage
           # puts scripts
 
           # output table
-          print_table(names,nodes,scripts)
+          table = print_table(names,nodes,scripts)
+          puts table
         end
 
         def get_names
@@ -90,7 +91,7 @@ module FlightManage
               t.add_row r
             end
           end
-          puts table
+          table
         end        
       end
     end
