@@ -28,6 +28,7 @@
 require 'socket'
 require 'yaml'
 require 'terminal-table'
+require 'fileutils'
 
 module FlightManage
   module Utils
