@@ -67,11 +67,15 @@ No data found for node '#{node}'
         end
 
         def print_stderr(vals)
-          puts "stderr:\n  #{vals['stderr']}"
+          stderr = vals['stderr'].split("\n")
+          print "stderr:\n"
+          stderr.each { |line| puts "  #{line}"}
         end
 
         def print_verbose(vals)
-          puts "stdout:\n  #{vals['stdout']}"
+          stdout = vals['stdout'].split("\n")
+          print "stdout:\n"
+          stdout.each { |line| puts "  #{line}"}
           print_stderr(vals)
         end
       end
