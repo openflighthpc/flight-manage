@@ -43,6 +43,7 @@ module FlightManage
           # create list of StateFile objects
           nodes = load_nodes(names)
 
+
           # get names of all scripts
           scripts = get_scripts(nodes)
 
@@ -75,15 +76,15 @@ module FlightManage
 
         def print_table(names,nodes,scripts)
           table = Terminal::Table.new do |t|
-            t.headings = scripts.unshift('Node')
+            t.headings = ['Node'].concat scripts
             rows = Array.new
             (0..names.length-1).each do |i|
               rows.push([names[i]])
-              (0..scripts.length-2).each do |j|
-                if nodes[i].data.values[j] == nil
+              (0..scripts.length-1).each do |j|
+                if nodes[i].data[scripts[j]] == nil
                   scriptval = "N/A"
                 else
-                  scriptval = nodes[i].data.values[j]["status"]
+                  scriptval = nodes[i].data[scripts[j]]["status"]
                 end
                 rows[i].push(scriptval)
               end
