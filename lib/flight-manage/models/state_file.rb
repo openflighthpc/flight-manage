@@ -38,9 +38,16 @@ module FlightManage
       end
 
       def data
-        # create file if it doesn't exist
-        File.open(path, 'w') {} unless File.file?(path)
-        Utils.read_yaml(path)
+        begin
+          # create directory if it doesn't exist
+          dirname = File.dirname(path)
+          FileUtils.mkdir_p(dirname) unless File.directory?(dirname)
+          # create file if it doesn't exist
+          File.open(path, 'w') {} unless File.file?(path)
+          Utils.read_yaml(path)
+        rescue Errno::EACCES => e
+          puts "Permission denied. Please check the read/write permissions of the \"/opt/service\" directory."
+        end
       end
 
       def path

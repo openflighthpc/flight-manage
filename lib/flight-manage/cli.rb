@@ -150,5 +150,11 @@ module FlightManage
       c.hidden = true
       action(c, Commands::Scripts::Resolve)
     end
+
+    command :report do |c|
+      cli_syntax(c)
+      c.description = 'Show table report of node status for all scripts'
+      action(c, Commands::Report::Show)
+    end
   end
 end
