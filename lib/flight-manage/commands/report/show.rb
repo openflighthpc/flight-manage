@@ -88,6 +88,7 @@ module FlightManage
                 rows[i].push(scriptval)
               end
             end
+            rows = rows.sort
             rows.each do |r|
               t.add_row r
             end
