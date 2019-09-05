@@ -84,6 +84,13 @@ module FlightManage
         command.option '-c', '--chain CHAIN',
           'Select all the scripts in the specified file'
       end
+
+      def output_verbosity(command)
+        command.option '-v', '--verbose',
+          'Print stderr and stdout of a script'
+        command.option '-e', '--error',
+          'Print just stderr'
+      end
     end
 
     command :node do |c|
@@ -96,7 +103,8 @@ module FlightManage
       cli_syntax(c, '[NODE]')
       c.description = 'Show history of execution on a node'\
                       ' (defaults to this node)'
-      c.hidden = true
+      output_verbosity(c)
+      c.hidden = true      
       action(c, Commands::Nodes::Show)
     end
 
