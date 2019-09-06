@@ -43,7 +43,6 @@ module FlightManage
           # create list of StateFile objects
           nodes = load_nodes(names)
 
-
           # get names of all scripts
           scripts = get_scripts(nodes)
 
@@ -66,13 +65,23 @@ module FlightManage
 
         def get_scripts(nodes)
           scripts = Array.new
-          Config.script_dirs.each do |dir|
-            Models::Script.glob_scripts(dir).each do |script|
+          if @options.role or @options.stage
+            filtered_scripts = Models::Script.find_scripts_with_role_and_stage(
+              @options.role,
+              @options.stage
+            )
+            filtered_scripts.each do |script|
               scripts.push(script.name)
+            end
+          else
+            Config.script_dirs.each do |dir|
+              Models::Script.glob_scripts(dir).each do |script|
+                scripts.push(script.name)
+              end
             end
           end
           scripts
-        end
+        end        
 
         def print_table(names,nodes,scripts)
           table = Terminal::Table.new do |t|
