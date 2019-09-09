@@ -1,5 +1,5 @@
 GIT
-  remote: git://github.com/alces-software/commander.git
+  remote: https://github.com/alces-software/commander.git
   revision: 89523312cc16c5454d79b598bec05112ee529d5d
   tag: 4.4.4.alces3
   specs:
@@ -11,8 +11,11 @@ GEM
   specs:
     highline (1.7.10)
     lockfile (2.1.3)
-    paint (2.1.0)
-    rubyzip (1.2.1)
+    paint (2.1.1)
+    rubyzip (1.2.4)
+    terminal-table (1.8.0)
+      unicode-display_width (~> 1.1, >= 1.1.1)
+    unicode-display_width (1.6.0)
 
 PLATFORMS
   ruby
@@ -22,6 +25,7 @@ DEPENDENCIES
   lockfile
   paint
   rubyzip
+  terminal-table
 
 BUNDLED WITH
-   1.17.1
+   2.0.2

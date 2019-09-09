@@ -1,0 +1,7 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = true
+	symlinks = false
+[remote "origin"]
+	url = https://github.com/alces-software/commander.git

@@ -33,6 +33,7 @@ require 'flight-manage/utils'
 
 require 'date'
 require 'open3'
+require 'net/ssh'
 
 module FlightManage
   module Commands
@@ -40,15 +41,19 @@ module FlightManage
       # Class of the script run command, executes a script
       class Run < ScriptCommand
         def run
-          state_file = Models::StateFile.new(Utils.get_host_name)
-          scripts = find_scripts(validate = true)
-          scripts.each do |script|
-            error_if_re_run(script, state_file.data)
-          end
-          Utils.lock_state_file(state_file) do
+          if @options.host
+            remote_execute            
+          else
+            state_file = Models::StateFile.new(@options.as || Utils.get_host_name)
+            scripts = find_scripts(validate = true)
             scripts.each do |script|
-              exec_values = execute(script)
-              output_execution_data(exec_values, script, state_file)
+              error_if_re_run(script, state_file.data)
+            end
+            Utils.lock_state_file(state_file) do
+              scripts.each do |script|
+                exec_values = execute(script)
+                output_execution_data(exec_values, script, state_file)
+              end
             end
           end
         end
@@ -87,6 +92,19 @@ Script #{script.name} cannot be re-ran or has failed on this node
             }
           end
           return exec_values
+        end
+
+        # remotely execute a script
+        def remote_execute
+          host = @options.host
+          command = "/media/sf_flight-manage/bin/manage script run #{@argv[0]}"
+          @options.marshal_dump.each do |k,v|
+            if k.to_s == "host"
+            else
+              command.concat(" --#{k.to_s} #{v}")
+            end
+          end
+          puts `ssh #{host} #{command}`
         end
 
         # print output, log & update the node's statefile
