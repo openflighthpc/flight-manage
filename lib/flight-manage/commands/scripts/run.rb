@@ -96,7 +96,7 @@ Script #{script.name} cannot be re-ran or has failed on this node
         # remotely execute a script
         def remote_execute
           host = @options.host
-          command = "/media/sf_flight-manage/bin/manage script run #{@argv[0]}"
+          command = "#{@remote_dir}/manage script run #{@argv[0]}"
           @options.marshal_dump.each do |k,v|
             if k.to_s == "host"
             else
