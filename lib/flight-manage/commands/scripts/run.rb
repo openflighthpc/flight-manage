@@ -39,7 +39,7 @@ module FlightManage
     module Scripts
       # Class of the script run command, executes a script
       class Run < ScriptCommand
-        def run
+        def run          
           if @options.host
             remote_execute            
           else
@@ -96,13 +96,14 @@ Script #{script.name} cannot be re-ran or has failed on this node
         # remotely execute a script
         def remote_execute
           host = @options.host
-          command = "#{@remote_dir}/manage script run #{@argv[0]}"
+          command = "#{Config.remote_exec} script run #{@argv[0]}"
           @options.marshal_dump.each do |k,v|
             if k.to_s == "host"
             else
               command.concat(" --#{k.to_s} #{v}")
             end
           end
+          puts command
           puts `ssh #{host} #{command}`
         end
 

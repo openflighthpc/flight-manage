@@ -46,7 +46,7 @@ module FlightManage
       end
     end
 
-    attr_reader :root_dir, :data_dir, :script_dirs, :log_file
+    attr_reader :root_dir, :data_dir, :script_dirs, :log_file, :remote_exec
 
     def initialize
       @root_dir = File.expand_path(File.join(File.dirname(__FILE__), '../..'))
@@ -73,8 +73,8 @@ Error in config file: Nested script directories #{dir1} and #{dir2} not valid
         end
       end
 
-      @remote_dir = get_val_from_conf(conf, 'remote_dir')
-      @remote_dir ||= '/opt/flight/bin/flight'
+      @remote_exec = get_val_from_conf(conf, 'remote_dir')
+      @remote_exec ||= '/opt/flight/bin/flight/manage'
 
       @log_file = get_val_from_conf(conf, 'log_file')
       @log_file ||= File.join(@root_dir, 'var/log/manage.log')
