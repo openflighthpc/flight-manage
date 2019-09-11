@@ -100,11 +100,11 @@ Error using script
       end
 
       def roles
-        @roles ||= flight_vars['roles']&.split(',') || [nil]
+        @roles ||= flight_vars['roles']&.split(',') || flight_vars['role']&.split(',') || [nil]
       end
 
       def stages
-        @stages ||= flight_vars['stages']&.split(',') || [nil]
+        @stages ||= flight_vars['stages']&.split(',') || flight_vars['stage']&.split(',') || [nil]
       end
 
       def description
@@ -146,7 +146,17 @@ Script at #{path} is not a flight script
             end
           end
         end
+        duplicate_stage_or_role(vars)
         return vars
+      end
+
+      def duplicate_stage_or_role(vars)
+        ["stage","role"].each do |var|
+          if vars[var] && vars["#{var}s"]
+            puts "WARNING: There exists both a \"#FLIGHT#{var}s\" and a
+            \"#FLIGHT#{var}\" entry in #{name}. Using #FLIGHT#{var}s."
+          end
+        end
       end
 
       private
