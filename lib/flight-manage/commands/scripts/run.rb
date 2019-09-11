@@ -103,7 +103,6 @@ Script #{script.name} cannot be re-ran or has failed on this node
               command.concat(" --#{k.to_s} #{v}")
             end
           end
-          puts command
           puts `ssh #{host} #{command}`
         end
 
