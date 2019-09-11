@@ -33,7 +33,6 @@ require 'flight-manage/utils'
 
 require 'date'
 require 'open3'
-require 'net/ssh'
 
 module FlightManage
   module Commands

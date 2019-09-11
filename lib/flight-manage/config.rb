@@ -73,6 +73,9 @@ Error in config file: Nested script directories #{dir1} and #{dir2} not valid
         end
       end
 
+      @remote_dir = get_val_from_conf(conf, 'remote_dir')
+      @remote_dir ||= '/opt/flight/bin/flight'
+
       @log_file = get_val_from_conf(conf, 'log_file')
       @log_file ||= File.join(@root_dir, 'var/log/manage.log')
     end
