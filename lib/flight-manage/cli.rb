@@ -91,6 +91,11 @@ module FlightManage
         command.option '-e', '--error',
           'Print just stderr'
       end
+
+      def add_remote_options(command)
+        command.option '--host IP',
+          'Specify remote IP to run script on'
+      end
     end
 
     command :node do |c|
@@ -139,6 +144,9 @@ module FlightManage
       cli_syntax(c, '[SCRIPT]')
       c.description = 'Execute scripts'
       add_role_and_stage_options(c)
+      add_remote_options(c)
+      c.option '--as NAME',
+        'Choose a node to associate the job run/output with (defaults to hostname)'
       c.hidden = true
       action(c, Commands::Scripts::Run)
     end
