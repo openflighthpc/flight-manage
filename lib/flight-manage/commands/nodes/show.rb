@@ -59,8 +59,10 @@ No data found for node '#{node}'
               puts "#{key}: #{vals['status']}"
               if verbose
                 print_verbose(vals)
+                puts
               elsif errors
                 print_stderr(vals)
+                puts
               end
             end
           end

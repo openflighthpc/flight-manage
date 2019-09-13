@@ -36,6 +36,8 @@ module FlightManage
       class Show < ScriptCommand
         def run
           script = Models::Script.new({'name' => @argv[0]})
+          verbose = @options['verbose']
+          errors = @options['error']
 
           dir = Dir[File.join(Config.data_dir, "/*")]
           state_files = dir.map do |p|
@@ -50,6 +52,11 @@ module FlightManage
           data.each do |node, data_hash|
             if data_hash.key?(script.name)
               out << "#{node}: #{data_hash[script.name]['status']}\n"
+              if verbose
+                out << print_verbose(data_hash[script.name])
+              elsif errors
+                out << print_stderr(data_hash[script.name])
+              end
             end
           end
 
@@ -59,6 +66,16 @@ module FlightManage
             puts "Showing current state of script: #{script.path}\n\n"
             puts out
           end
+        end
+
+        def print_stderr(vals)
+          stderr = vals['stderr'].split("\n")
+          "stderr:\n  #{stderr.join("\n  ")}\n"
+        end
+
+        def print_verbose(vals)
+          stdout = vals['stdout'].split("\n")
+          "stdout:\n  #{stdout.join("\n  ")}\n#{print_stderr(vals)}\n"
         end
       end
     end

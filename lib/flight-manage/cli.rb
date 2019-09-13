@@ -32,7 +32,7 @@ require 'paint'
 
 module FlightManage
   module CLI
-    PROGRAM_NAME = ENV.fetch('FLIGHT_PROGRAM_NAME', 'manage')
+    PROGRAM_NAME=ENV.fetch('FLIGHT_PROGRAM_NAME', 'manage')
 
     extend Commander::Delegates
     program :name, PROGRAM_NAME
@@ -82,81 +82,65 @@ module FlightManage
         command.option '-s', '--stage STAGE',
           'Select all scripts with STAGE (and no ROLE unless --role is passed)'
         command.option '-c', '--chain CHAIN',
-          'Select all the scripts in the specified file'
+          'Select all scripts in the specified file'
       end
 
       def output_verbosity(command)
         command.option '-v', '--verbose',
-          'Print stderr and stdout of a script'
+          'Print stderr and stdout of each script'
         command.option '-e', '--error',
           'Print just stderr'
       end
-
-      def add_remote_options(command)
-        command.option '--host IP',
-          'Specify remote IP to run script on'
-      end
     end
 
-    command :node do |c|
+    command :run do |c|
+      cli_syntax(c, '[SCRIPT]')
+      c.description = 'Execute scripts'
+      add_role_and_stage_options(c)
+      action(c, Commands::Scripts::Run)
+    end
+
+    command :list do |c|
       cli_syntax(c, 'SUBCOMMAND')
-      c.description = 'Manage nodes'
+      c.description = 'List available nodes/scripts'
       c.configure_sub_command(self)
     end
 
-    command :'node show' do |c|
-      cli_syntax(c, '[NODE]')
-      c.description = 'Show history of execution on a node'\
-                      ' (defaults to this node)'
-      output_verbosity(c)
-      c.hidden = true      
-      action(c, Commands::Nodes::Show)
-    end
-
-    command :script do |c|
-      cli_syntax(c, 'SUBCOMMAND')
-      c.description = 'Manage scripts'
-      c.configure_sub_command(self)
-    end
-
-    command :'script import' do |c|
-      cli_syntax(c, 'SOURCE DESTINATION PLATFORM')
-      c.description = 'Import scripts from an openflightHPC Architect .zip'
-      c.hidden = true
-      action(c, Commands::Scripts::Import)
-    end
-
-    command :'script list' do |c|
+    command :'list scripts' do |c|
       cli_syntax(c)
       c.description = 'List available scripts'
       c.hidden = true
       action(c, Commands::Scripts::List)
     end
 
-    command :'script show' do |c|
-      cli_syntax(c, 'SCRIPT')
+    command :'list nodes' do |c|
+      cli_syntax(c)
+      c.description = 'List available nodes'
+      c.hidden = true
+      #action(c, Commands::Nodes::List)
+    end
+
+    command :show do |c|
+      cli_syntax(c, 'SUBCOMMAND')
+      c.description = 'Show expanded details on singular node/script'
+      c.configure_sub_command(self)
+    end
+
+    command :'show node' do |c|
+      cli_syntax(c, '[NODE]')
+      c.description = 'Show history of execution on a node'\
+                      ' (defaults to this node)'
+      c.hidden = true
+      output_verbosity(c)
+      action(c, Commands::Nodes::Show)
+    end
+
+    command :'show script' do |c|
+      cli_syntax(c, '[SCRIPT]')
       c.description = 'Show execution history of a script'
       c.hidden = true
+      output_verbosity(c)
       action(c, Commands::Scripts::Show)
-    end
-
-    command :'script run' do |c|
-      cli_syntax(c, '[SCRIPT]')
-      c.description = 'Execute scripts'
-      add_role_and_stage_options(c)
-      add_remote_options(c)
-      c.option '--as NAME',
-        'Choose a node to associate the job run/output with (defaults to hostname)'
-      c.hidden = true
-      action(c, Commands::Scripts::Run)
-    end
-
-    command :'script resolve' do |c|
-      cli_syntax(c, '[SCRIPT]')
-      c.description = 'Mark a script as having been completed externally'
-      add_role_and_stage_options(c)
-      c.hidden = true
-      action(c, Commands::Scripts::Resolve)
     end
 
     command :report do |c|
@@ -164,6 +148,19 @@ module FlightManage
       c.description = 'Show table report of node status for all scripts'
       add_role_and_stage_options(c)
       action(c, Commands::Report::Show)
+    end
+
+    command :resolve do |c|
+      cli_syntax(c, '[SCRIPT]')
+      c.description = 'Mark a script as having been completed externally'
+      add_role_and_stage_options(c)
+      action(c, Commands::Scripts::Resolve)
+    end
+
+    command :import do |c|
+      cli_syntax(c, 'SOURCE DESTINATION PLATFORM')
+      c.description = 'Import scripts from an openflightHPC Architect .zip'
+      action(c, Commands::Scripts::Import)
     end
   end
 end
