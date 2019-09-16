@@ -45,10 +45,6 @@ module FlightManage
 
           # Print data to output
           print_nodes(nodes)
-          
-
-
-
         end
 
         def get_names
@@ -64,13 +60,11 @@ module FlightManage
         end
 
         def print_nodes(nodes)
+          puts "Listing all nodes in #{Config.data_dir}:"
+          puts ''
           nodes.each do |node|
             puts node.node
           end
-
-
-
-
         end
       end
     end
