@@ -44,7 +44,7 @@ module FlightManage
           nodes = load_nodes(names)
 
           # get names of all scripts
-          scripts = get_scripts(nodes)
+          scripts = get_scripts(names)
 
           # output table
           table = print_table(names,nodes,scripts)
@@ -63,7 +63,7 @@ module FlightManage
           nodes
         end
 
-        def get_scripts(nodes)
+        def get_scripts(names)
           scripts = Array.new
           if @options.role or @options.stage
             filtered_scripts = Models::Script.find_scripts_with_role_and_stage(
@@ -80,7 +80,11 @@ module FlightManage
               end
             end
           end
-          scripts
+          names.each do |name|
+            node = Utils.read_yaml("#{File.join(Config.data_dir,name)}.yaml")
+            scripts.push(node.keys)            
+          end
+          scripts.flatten.uniq
         end        
 
         def print_table(names,nodes,scripts)
