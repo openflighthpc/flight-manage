@@ -37,30 +37,18 @@ module FlightManage
       # Class of report command, prints table report on all node/script status
       class Show < Command
         def run
-          # get names of all nodes
-          names = get_names
+          # import nodes
+          nodes = Utils.import_node_statefiles
 
-          # create list of StateFile objects
-          nodes = load_nodes(names)
-
+          # list of node names
+          names = nodes.map { |node| node.node }
+          
           # get names of all scripts
           scripts = get_scripts(names)
 
           # output table
-          table = print_table(names,nodes,scripts)
+          table = print_table(nodes,names,scripts)
           puts table
-        end
-
-        def get_names
-          names = Dir[File.join(Config.data_dir,'*')]
-          names.map! { |f| File.basename(f,'.*')}
-          names
-        end
-
-        def load_nodes(names)
-          nodes = Array.new
-          names.each {|name| nodes.push(Models::StateFile.new(name))}
-          nodes
         end
 
         def get_scripts(names)
@@ -81,13 +69,13 @@ module FlightManage
             end
           end
           names.each do |name|
-            node = Utils.read_yaml("#{File.join(Config.data_dir,name)}.yaml")
-            scripts.push(node.keys)            
+            node = Utils.read_yaml(File.join(Config.data_dir,"#{name}.yaml"))
+            scripts.push(node.keys)
           end
           scripts.flatten.uniq
         end        
 
-        def print_table(names,nodes,scripts)
+        def print_table(nodes,names,scripts)
           table = Terminal::Table.new do |t|
             t.headings = ['Node','Script','Status']
             (0..names.length-1).each do |i|

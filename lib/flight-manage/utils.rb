@@ -61,5 +61,14 @@ Error parsing yaml in #{path} - aborting
       data ||= {}
       data
     end
+
+    def self.import_node_statefiles
+      nodes = Array.new
+      Dir.foreach(Config.data_dir) do |item|
+        next if item == '.' or item == '..'
+        nodes.push(Models::StateFile.new(item.chomp(".yaml")))
+      end
+      nodes
+    end
   end
 end

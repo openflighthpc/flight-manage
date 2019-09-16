@@ -38,21 +38,12 @@ module FlightManage
       class List < Command
         def run
           # Import all nodes
-          nodes = import_nodes
+          nodes = Utils.import_node_statefiles
 
           # Print data to output
           print_nodes(nodes)
         end
 
-        def import_nodes
-          nodes = Array.new
-          Dir.foreach(Config.data_dir) do |item|
-            next if item =='.' or item == '..'
-            nodes.push(Models::StateFile.new(item))
-          end
-          nodes
-        end
-        
         def print_nodes(nodes)
           puts "Listing all nodes in #{Config.data_dir}:"
           puts ''
