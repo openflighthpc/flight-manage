@@ -37,28 +37,22 @@ module FlightManage
       # Class of list node command, lists all available nodes
       class List < Command
         def run
-          # Get names of all nodes
-          names = get_names
-
-          # Compile list of StateFile objects
-          nodes = load_nodes(names)
+          # Import all nodes
+          nodes = import_nodes
 
           # Print data to output
           print_nodes(nodes)
         end
 
-        def get_names
-          names = Dir[File.join(Config.data_dir, '*')]
-          names.map! { |f| File.basename(f,'.*')}
-          names
-        end
-
-        def load_nodes(names)
+        def import_nodes
           nodes = Array.new
-          names.each { |name| nodes.push(Models::StateFile.new(name))}
+          Dir.foreach(Config.data_dir) do |item|
+            next if item =='.' or item == '..'
+            nodes.push(Models::StateFile.new(item))
+          end
           nodes
         end
-
+        
         def print_nodes(nodes)
           puts "Listing all nodes in #{Config.data_dir}:"
           puts ''
