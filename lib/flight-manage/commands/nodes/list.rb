@@ -25,12 +25,55 @@
 # https://github.com/openflighthpc/flight-manage
 # ==============================================================================
 
-require 'flight-manage/commands/nodes/show'
-require 'flight-manage/commands/nodes/list'
-require 'flight-manage/commands/scripts/import'
-require 'flight-manage/commands/scripts/list'
-require 'flight-manage/commands/scripts/script_command'
-require 'flight-manage/commands/scripts/resolve'
-require 'flight-manage/commands/scripts/run'
-require 'flight-manage/commands/scripts/show'
-require 'flight-manage/commands/report/show'
+require 'flight-manage/command'
+require 'flight-manage/config'
+require 'flight-manage/exceptions'
+require 'flight-manage/models/state_file'
+require 'flight-manage/utils'
+
+module FlightManage
+  module Commands
+    module Nodes
+      # Class of list node command, lists all available nodes
+      class List < Command
+        def run
+          # Get names of all nodes
+          names = get_names
+
+          # Compile list of StateFile objects
+          nodes = load_nodes(names)
+
+          # Print data to output
+          print_nodes(nodes)
+          
+
+
+
+        end
+
+        def get_names
+          names = Dir[File.join(Config.data_dir, '*')]
+          names.map! { |f| File.basename(f,'.*')}
+          names
+        end
+
+        def load_nodes(names)
+          nodes = Array.new
+          names.each { |name| nodes.push(Models::StateFile.new(name))}
+          nodes
+        end
+
+        def print_nodes(nodes)
+          nodes.each do |node|
+            puts node.node
+          end
+
+
+
+
+        end
+      end
+    end
+  end
+end
+

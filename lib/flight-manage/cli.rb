@@ -117,7 +117,7 @@ module FlightManage
       cli_syntax(c)
       c.description = 'List available nodes'
       c.hidden = true
-      #action(c, Commands::Nodes::List)
+      action(c, Commands::Nodes::List)
     end
 
     command :show do |c|
