@@ -97,6 +97,8 @@ module FlightManage
       cli_syntax(c, '[SCRIPT]')
       c.description = 'Execute scripts'
       add_role_and_stage_options(c)
+      c.option '--as ALIAS',
+        'Save output as ALIAS'
       action(c, Commands::Scripts::Run)
     end
 
