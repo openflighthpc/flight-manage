@@ -1,5 +1,5 @@
 GIT
-  remote: https://github.com/alces-software/commander.git
+  remote: git://github.com/alces-software/commander.git
   revision: 89523312cc16c5454d79b598bec05112ee529d5d
   tag: 4.4.4.alces3
   specs:
@@ -28,4 +28,4 @@ DEPENDENCIES
   terminal-table
 
 BUNDLED WITH
-   2.0.2
+   1.17.3
