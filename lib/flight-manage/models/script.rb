@@ -71,7 +71,7 @@ No scripts found with #{role_str} and #{stage_str}
         def glob_scripts(dir)
           paths = Dir.glob(File.join(dir, '**/*.bash'))
           scripts = paths.map { |p| Script.new({'path' => p}) }
-          scripts = scripts.select { |s| s.is_flight_script? }
+          scripts = scripts.select { |s| s.is_flight_script? && s.name[/^[\w,\.]+$/]}
           scripts = sort_scripts(scripts)
         end
 
@@ -164,6 +164,7 @@ Script at #{path} is not a flight script
       def sanitise_name(str = @name)
         str = str.gsub(/\.bash$/, '')
         str = str.gsub(/^\//, '')
+        str = str.gsub(/[^\w,\.]/, '')
       end
 
       def find_dir(name = @name)

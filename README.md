@@ -25,7 +25,9 @@ There is a single configuration file, `etc/manage.conf`, which is used to store
 `data_dir` is the path to the directory where node data YAMLs are stored.
 
 `script_dirs` is a set of directories where scripts to be run are stored.
-Please do not use scripts with whitespace in them.
+Script names must only contain alphanumeric characters (upper/lowercase A-Z,
+0-9) underscores and full points. Any scripts with a character that doesn't
+match this critera will be ignored.
 
 `log_file` is where the Flight Manage execution log is stored.
 
