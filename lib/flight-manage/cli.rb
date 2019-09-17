@@ -99,6 +99,8 @@ module FlightManage
       add_role_and_stage_options(c)
       c.option '--as ALIAS',
         'Save output as ALIAS'
+      c.option '--host IP',
+        'Run on remote host. Assumes a Flight Manage/NFS set up on target host'
       action(c, Commands::Scripts::Run)
     end
 
